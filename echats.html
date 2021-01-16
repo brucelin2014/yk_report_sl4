@@ -1,0 +1,224 @@
+<!--2021-01-14, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/echarts.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_20201103_1.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			.title {
+				background-color: lightgray;
+				padding: 10px;
+				font-size: 25px;
+				text-align: center;
+			}
+
+			.header {
+				background-color: lightgray
+			}
+
+			canvas {
+				border: 1px dashed black;
+			}
+			
+			[v-cloak] {
+				display: none
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--报表标题-->
+			<div class="title">评估训练报告</div>
+
+			<!--用户数据-->
+			<table border="1" cellspacing="0" cellpadding="6" width="100%" style="text-align: center;">
+				<tr>
+					<td width="20%" class="header">生成时间</td>
+					<td colspan="5">{{data.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">用户</td>
+					<td colspan="3"></td>
+					<td width="20%" class="header">用户编号</td>
+					<td width="30%">{{data.UNUM}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">性别</td>
+					<td></td>
+					<td width="10%" class="header">年龄</td>
+					<td></td>
+					<td width="20%" class="header">注册日期</td>
+					<td width="30%"></td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">病史</td>
+					<td colspan="5">{{data.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">备注</td>
+					<td colspan="5">{{data.REPORTDATE}}</td>
+				</tr>
+			</table>
+
+			<!--训练数据-->
+			<table border="1" cellspacing="0" cellpadding="6" width="100%" style="text-align: center;">
+				<tr class="header">
+					<th width="10%">序号</th>
+					<th width="45%">评估参数</th>
+					<th width="45%">评估结果</th>
+				</tr>
+				<tr v-for="(item, index) in arrColumn">
+					<td width="10%">{{index + 1}}</td>
+					<td width="45%">{{item}}</td>
+					<td width="45%">{{arrColumnVal[index]}}</td>
+				</tr>
+				<tr>
+					<td colspan="3" align="center">
+						<div id="echart" style="width: 550px;height:400px;"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<script>
+			var app = new Vue({
+				el: '#app',
+				data: {
+					data: {},
+					arrColumn: ['训练主动里程', '训练被动里程', '训练合计里程', '训练主动时间', '训练被动时间',
+						'训练合计时间', '肌张力起始', '肌张力最终', '肌张力平均', '主动训练强度(瓦)',
+						'最大训练强度(瓦)', '痉挛次数', '总能量(千焦)', '总能量(千卡路里)', '平均对称性',
+						'平均协调成功率', '平均主动转速', '疼痛等级', '最大肌力', '平均肌力',
+						'发力次数', '最大心率', '平均心率', '最大血氧', '平均血氧'
+					],
+					arrColumnVal: []
+				},
+				mounted: function() {
+					console.log('mounted');
+					this.parseData();
+					this.showReport();
+
+					this.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.data = JSON.parse(arrData)[0];
+						if (this.data) {
+							this.arrColumnVal[0] = this.data.MILEAGEINITATIVE;
+							this.arrColumnVal[1] = this.data.MILEAGEPASSIVE;
+							this.arrColumnVal[2] = this.data.MILEAGE;
+							this.arrColumnVal[3] = this.data.TIMEINITATIVE;
+							this.arrColumnVal[4] = this.data.TIMEPASSIVE;
+
+							this.arrColumnVal[5] = this.data.TIME;
+							this.arrColumnVal[6] = this.data.START;
+							this.arrColumnVal[7] = this.data.END;
+							this.arrColumnVal[8] = this.data.NOW;
+							this.arrColumnVal[9] = this.data.INTENSITY;
+
+							this.arrColumnVal[10] = this.data.INTENSITYMAX;
+							this.arrColumnVal[11] = this.data.SPASM;
+							this.arrColumnVal[12] = this.data.EBERGY;
+							this.arrColumnVal[13] = this.data.EBERGYCALORIE;
+							this.arrColumnVal[14] = this.data.SYMMERTYLEFT;
+
+							this.arrColumnVal[15] = this.data.COORDINATEAVERAGE;
+							this.arrColumnVal[16] = this.data.VELOCITY;
+							this.arrColumnVal[17] = this.data.PAIN;
+							this.arrColumnVal[18] = this.data.MUSCLEMAX;
+							this.arrColumnVal[19] = this.data.MUSCLEAVERAGE;
+
+							this.arrColumnVal[20] = this.data.MUSCLENUM;
+							this.arrColumnVal[21] = this.data.HEARTRATEMAX;
+							this.arrColumnVal[22] = this.data.HEARTRATE;
+							this.arrColumnVal[23] = this.data.BLOODMAX;
+							this.arrColumnVal[24] = this.data.BLOOD;
+						}
+					},
+					showReport: function() {
+						option = {
+							tooltip: {
+								trigger: 'axis'
+							},
+							grid: {
+								left: '10px',
+								right: '10px',
+								top: '10px',
+								bottom: '10px',
+								containLabel: true
+							},
+							backgroundColor: '#ffffff',
+							xAxis: {
+								type: 'category', // 离散的类目数据
+								boundaryGap: false, // 坐标轴两边留白策略
+								axisTick: {
+									show: true,
+								},
+								axisLabel: {
+									color: '#000000'
+								},
+								axisLine: {
+									lineStyle: {
+										color: 'rgba(0,0,0,.9)',
+										width: 3,
+									},
+									symbol: ['none', 'arrow']
+								},
+								splitLine: {
+									show: true
+								},
+								splitArea: {
+									show: true,
+								},
+							},
+							yAxis: {
+								type: 'category',
+								axisTick: {
+									show: true, //不显示刻度线
+								},
+								axisLabel: {
+									color: '#000000' //y轴上的字体颜色
+								},
+								axisLine: {
+									lineStyle: {
+										width: 3,
+										color: 'rgba(0,0,0,.9)', //y轴的轴线的宽度和颜色
+									},
+									symbol: ['none', 'arrow']
+								},
+								splitLine: {
+									show: true
+								},
+								splitArea: {
+									show: true,
+								},
+							},
+							series: [{
+								type: 'line',
+								symbol: 'none',
+								smooth: true,
+								itemStyle: {
+									normal: {
+										color: '#ff0000',
+									}
+								}
+							}]
+						};
+						option.xAxis.data = ['0', '40', '80', '120', '160', '200', '240', '280', '320', '360'];
+						option.yAxis.data = ['-20', '-15', '-10', '-5', '0', '5', '10', '15', '20'];
+						option.series[0].data = [0, 10, 10, 10, 300, -2];
+						var chart3 = echarts.init(document.getElementById('echart'));
+						chart3.setOption(option);
+					}
+				}
+			})
+		</script>
+	</body>
+</html>

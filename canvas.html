@@ -1,0 +1,233 @@
+<!--2021-01-14, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/canvas.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_20201103_1.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			.title {
+				background-color: lightgray;
+				padding: 10px;
+				font-size: 25px;
+				text-align: center;
+			}
+
+			.header {
+				background-color: lightgray
+			}
+
+			canvas {
+				border: 0px dashed black;
+			}
+
+			[v-cloak] {
+				display: none
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--报表标题-->
+			<div class="title">评估训练报告</div>
+
+			<!--用户数据-->
+			<table border="1" cellspacing="0" cellpadding="6" width="100%" style="text-align: center;">
+				<tr>
+					<td width="20%" class="header">生成时间</td>
+					<td colspan="5">{{data.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">用户</td>
+					<td colspan="3"></td>
+					<td width="20%" class="header">用户编号</td>
+					<td width="30%">{{data.UNUM}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">性别</td>
+					<td></td>
+					<td width="10%" class="header">年龄</td>
+					<td></td>
+					<td width="20%" class="header">注册日期</td>
+					<td width="30%"></td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">病史</td>
+					<td colspan="5">{{data.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">备注</td>
+					<td colspan="5">{{data.REPORTDATE}}</td>
+				</tr>
+			</table>
+
+			<!--训练数据-->
+			<table border="1" cellspacing="0" cellpadding="6" width="100%" style="text-align: center;">
+				<tr class="header">
+					<th width="10%">序号</th>
+					<th width="45%">评估参数</th>
+					<th width="45%">评估结果</th>
+				</tr>
+				<tr v-for="(item, index) in arrColumn">
+					<td width="10%">{{index + 1}}</td>
+					<td width="45%">{{item}}</td>
+					<td width="45%">{{arrColumnVal[index]}}</td>
+				</tr>
+				<tr>
+					<td colspan="3" align="center">
+						<canvas id="canvas" width="820" height="580"></canvas>
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<script>
+			var app = new Vue({
+				el: '#app',
+				data: {
+					data: {},
+					arrColumn: ['训练主动里程', '训练被动里程', '训练合计里程', '训练主动时间', '训练被动时间',
+						'训练合计时间', '肌张力起始', '肌张力最终', '肌张力平均', '主动训练强度(瓦)',
+						'最大训练强度(瓦)', '痉挛次数', '总能量(千焦)', '总能量(千卡路里)', '平均对称性',
+						'平均协调成功率', '平均主动转速', '疼痛等级', '最大肌力', '平均肌力',
+						'发力次数', '最大心率', '平均心率', '最大血氧', '平均血氧'
+					],
+					arrColumnVal: [],
+					counter: 0
+				},
+				mounted: function() {
+					console.log('mounted');
+					var that = this;
+					that.parseData();
+					that.showReport();
+
+					that.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.data = JSON.parse(arrData)[0];
+						if (this.data) {
+							this.arrColumnVal[0] = this.data.MILEAGEINITATIVE;
+							this.arrColumnVal[1] = this.data.MILEAGEPASSIVE;
+							this.arrColumnVal[2] = this.data.MILEAGE;
+							this.arrColumnVal[3] = this.data.TIMEINITATIVE;
+							this.arrColumnVal[4] = this.data.TIMEPASSIVE;
+
+							this.arrColumnVal[5] = this.data.TIME;
+							this.arrColumnVal[6] = this.data.START;
+							this.arrColumnVal[7] = this.data.END;
+							this.arrColumnVal[8] = this.data.NOW;
+							this.arrColumnVal[9] = this.data.INTENSITY;
+
+							this.arrColumnVal[10] = this.data.INTENSITYMAX;
+							this.arrColumnVal[11] = this.data.SPASM;
+							this.arrColumnVal[12] = this.data.EBERGY;
+							this.arrColumnVal[13] = this.data.EBERGYCALORIE;
+							this.arrColumnVal[14] = this.data.SYMMERTYLEFT;
+
+							this.arrColumnVal[15] = this.data.COORDINATEAVERAGE;
+							this.arrColumnVal[16] = this.data.VELOCITY;
+							this.arrColumnVal[17] = this.data.PAIN;
+							this.arrColumnVal[18] = this.data.MUSCLEMAX;
+							this.arrColumnVal[19] = this.data.MUSCLEAVERAGE;
+
+							this.arrColumnVal[20] = this.data.MUSCLENUM;
+							this.arrColumnVal[21] = this.data.HEARTRATEMAX;
+							this.arrColumnVal[22] = this.data.HEARTRATE;
+							this.arrColumnVal[23] = this.data.BLOODMAX;
+							this.arrColumnVal[24] = this.data.BLOOD;
+						}
+					},
+					showReport: function() {
+						var offset_x = 50;
+						var offset_y = 50;
+						var scale_x = 2;
+						var scale_y = 9.5;
+						var width = 360 * 2;
+						var height = 240 * 2;
+
+						var canvas = document.getElementById("canvas");
+						var context = canvas.getContext("2d");
+						context.strokeStyle = "#000000";
+						context.lineWidth = 2;
+
+						this.counter++;
+						if (this.counter % 2 == 0)
+							return;
+
+						// X轴
+						context.translate(offset_x, offset_y);
+						addLine(context, 0, height, width, height);
+						// 角度刻度值
+						var width_x = width / 10;
+						for (var i = 0; i < 10; i++) {
+							if (i > 0) {
+								addLine(context, width_x * i, height, width_x * i, height + 8);
+							}
+							addText(context, 360 / 9 * i + '', width_x * i - 10, height + 15);
+						}
+						// X轴箭头
+						drawPolygon(context, {
+							x: width,
+							y: height,
+							num: 3,
+							r: 8,
+							fillStyle: '#000000'
+						})
+
+						// Y轴
+						var height_y = height / 10;
+						addLine(context, 0, 0, 0, height);
+						// 力矩刻度值
+						for (var i = 0; i < 10; i++) {
+							if (i > 0) {
+								addLine(context, -8, height_y * i, 0, height_y * i);
+								addText(context, 25 - 5 * i + '', -40, height_y * i - 10);
+							}
+						}
+						// Y轴箭头
+						drawPolygon(context, {
+							x: 0,
+							y: 0,
+							num: 3,
+							r: 8,
+							angle: Math.PI * 2 * (-90 / 360.0),
+							fillStyle: '#000000'
+						})
+						context.translate(-offset_x, -offset_y);
+
+						setInterval(function() {
+							// 清除画布
+							context.translate(offset_x + 1, offset_y + 5);
+							clearCanvas(context, width, height - 10);
+							context.translate(-(offset_x + 1), -(offset_y + 5));
+							
+							// 曲线数据
+							var arrPoint = [];
+							for (var i = 0; i < 360; i++) {
+								if (i % 10 == 0) {
+									arrPoint.push({
+										x: i * scale_x,
+										y: Number(41 * Math.random() - 20) * scale_y
+									});
+								}
+							}
+							
+							// 绘制曲线
+							context.translate(offset_x, height / 2 + offset_y);
+							addCurve(context, arrPoint);
+							context.translate(-offset_x, -(height / 2 + offset_y));
+						}, 2 * 1000);
+					},
+
+				}
+			})
+		</script>
+	</body>
+</html>
