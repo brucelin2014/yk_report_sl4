@@ -207,7 +207,7 @@
 							context.translate(offset_x + 1, offset_y + 5);
 							clearCanvas(context, width, height - 10);
 							context.translate(-(offset_x + 1), -(offset_y + 5));
-							
+
 							// 曲线数据
 							var arrPoint = [];
 							for (var i = 0; i < 360; i++) {
@@ -218,13 +218,38 @@
 									});
 								}
 							}
-							
+
 							// 绘制曲线
 							context.translate(offset_x, height / 2 + offset_y);
 							addCurve(context, arrPoint);
 							context.translate(-offset_x, -(height / 2 + offset_y));
 						}, 2 * 1000);
 					},
+					// var selLang = _self.convertLanguage(_self.getQueryString("mSelLanguage"));
+					getQueryString: function(name) {
+						var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+						var r = window.location.search.substr(1).match(reg);
+						if (r != null)
+							return unescape(r[2]);
+						return null;
+					},
+					// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
+					reloadAbleJSFn = function(id, newJS) {
+						try {
+							var oldjs = null;
+							var t = null;
+							var oldjs = document.getElementById(id);
+							if (oldjs)
+								oldjs.parentNode.removeChild(oldjs);
+							var scriptObj = document.createElement("script");
+							scriptObj.src = newJS;
+							scriptObj.type = "text/javascript";
+							scriptObj.id = id;
+							document.getElementsByTagName("head")[0].appendChild(scriptObj);
+						} catch (e) {
+							alert(e.message);
+						}
+					}
 
 				}
 			})
