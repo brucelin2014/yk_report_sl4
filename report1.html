@@ -10,29 +10,19 @@
 
 		<style>
 			body {
-				margin: 10;
+				margin: 0;
 				padding: 0;
 			}
 
 			.title {
-				background-color: white;
+				background-color: lightgray;
 				padding: 5px;
 				font-size: 20px;
 				text-align: center;
 			}
 
 			.header {
-				background-color: white;
-				text-align: justify;
-				text-align-last: justify;
-				width: 80px;
-				padding-left: 30px;
-			}
-			.header_data {
-				background-color: white;
-			}
-			.value {
-				border-bottom:1px solid black;
+				background-color: lightgray
 			}
 
 			canvas {
@@ -50,92 +40,74 @@
 			<div class="title">SL4等速训练报告</div>
 
 			<!--用户数据-->
-			<table border="0" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+			<table border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
 				<tr>
-					<td width="20%" class="header">生成时间：</td>
-					<td colspan="5" class="value">{{datas.length > 0 ? datas[0].REPORTDATE : ''}}</td>
+					<td width="20%" class="header">生成时间</td>
+					<td colspan="5">{{datas.length > 0 ? datas[0].REPORTDATE : ''}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">用户：</td>
-					<td colspan="3" class="value">{{user.USERNAME}}</td>
-					<td width="20%" class="header">用户编号：</td>
-					<td width="30%" class="value">{{user.NUM}}</td>
+					<td width="20%" class="header">用户</td>
+					<td colspan="3">{{user.USERNAME}}</td>
+					<td width="20%" class="header">用户编号</td>
+					<td width="30%">{{user.NUM}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">性别：</td>
-					<td class="value">{{user.SEX}}</td>
-					<td width="10%" class="header">年龄：</td>
-					<td class="value">{{user.AGE}}</td>
-					<td width="20%" class="header">注册日期：</td>
-					<td width="30%" class="value">{{user.TIME}}</td>
+					<td width="20%" class="header">性别</td>
+					<td>{{user.SEX}}</td>
+					<td width="10%" class="header">年龄</td>
+					<td>{{user.AGE}}</td>
+					<td width="20%" class="header">注册日期</td>
+					<td width="30%">{{user.TIME}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">病史：</td>
-					<td colspan="5" class="value">{{user.HISTORY}}</td>
+					<td width="20%" class="header">病史</td>
+					<td colspan="5">{{user.HISTORY}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">备注：</td>
-					<td colspan="5" class="value">{{user.REMARK}}</td>
+					<td width="20%" class="header">备注</td>
+					<td colspan="5">{{user.REMARK}}</td>
 				</tr>
 			</table>
 
 			<!--训练数据-->
-			<table border="0" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+			<table border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
 				<tr>
 					<td colspan="6" align="center">
 						<canvas id="canvas" width="900" height="580"></canvas>
 					</td>
 				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[0]}}</th>
-					<td>{{datas[0].EBERGY}}</td>
-					<th>{{arrColumn2[0]}}</th>
+				<tr class="header">
+					<th v-for="(item, index) in arrColumn1">{{item}}</th>
+				</tr>
+				<tr v-for="(data, index) in datas">
+					<td>{{index + 1}}</td>
+					<td>{{data.EBERGY}}</td>
+					<td>{{(data.EBERGY * 1000 / min2Sec(data.TIME)).toFixed(2)}}</td>
+					<td>{{data.VELOCITY}}</td>
+					<td>{{data.NOW}}</td>
+					<td>{{data.TIME}}</td>
+				</tr>
+				<tr class="header">
+					<th v-for="(item, index) in arrColumn2">{{item}}</th>
+				</tr>
+				<tr v-for="(data, index) in datas">
+					<td>{{index + 1}}</td>
 					<td>8</td>
-				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[1]}}</th>
-					<td>{{(datas[0].EBERGY * 1000 / min2Sec(datas[0].TIME)).toFixed(2)}}</td>
-					<th>{{arrColumn2[1]}}</th>
-					<td>{{datas[0].SYMMERTYLEFT}}</td>
-				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[2]}}</th>
-					<td>{{datas[0].VELOCITY}}</td>
-					<th>{{arrColumn2[2]}}</th>
-					<td>{{datas[0].SYMMERTYRIGHT}}</td>
-				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[3]}}</th>
-					<td>{{datas[0].NOW}}</td>
-					<th>{{arrColumn2[3]}}</th>
-					<td>{{datas[0].SYMMERTYLEFT}}</td>
-				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[4]}}</th>
-					<td>{{datas[0].TIME}}</td>
-					<th>{{arrColumn2[4]}}</th>
-					<td>{{datas[0].SYMMERTYRIGHT}}</td>
-				</tr>
-				
-				<tr>
-					<td class="header">评估结果：</td>
-					<td colspan="5" class="value"></td>
+					<td>{{data.SYMMERTYLEFT}}</td>
+					<td>{{data.SYMMERTYRIGHT}}</td>
+					<td>{{data.SYMMERTYLEFT}}</td>
+					<td>{{data.SYMMERTYRIGHT}}</td>
 				</tr>
 				<tr>
-					<td class="header">康复意见：</td>
-					<td colspan="5" class="value"></td>
+					<td colspan="6" style="text-align: left;">评估结果：</td>
 				</tr>
 				<tr>
-					<td colspan="2" style="text-align: right;"></td>
-					<td class="header">治疗师：</td>
-					<td width="10%" class="value"></td>
-					<td class="header">日期：</td>
-					<td width="10%" class="value"></td>
+					<td colspan="6" style="text-align: left;">康复意见：</td>
+				</tr>
+				<tr>
+					<td colspan="4" style="text-align: right;"></td>
+					<td style="text-align: left;">治疗师：</td>
+					<td style="text-align: left;">日期：</td>
 				</tr>
 			</table>
 		</div>
@@ -148,8 +120,10 @@
 				data: {
 					user: {},
 					datas: {},
-					arrColumn1: ['总功(千焦)', '平均功率', '速度(r/min)', '最大肌力', '时间(分钟)'],
-					arrColumn2: ['成功次数', '左右力矩比(%)-左', '左右力矩比(%)-右', '屈/伸力矩比(%)-左', '屈/伸力矩比(%)-右'],
+					arrColumn1: ['次数', '总功(千焦)', '平均功率', '速度(r/min)', '最大肌力', '时间(分钟)'],
+					arrColumn2: ['次数', '成功次数', '左右力矩比(%)-左', '左右力矩比(%)-右', '屈/伸力矩比(%)-左',
+						'屈/伸力矩比(%)-右'
+					],
 					counter: 0
 				},
 				mounted: function() {
@@ -227,7 +201,7 @@
 							angle: Math.PI * 2 * (-90 / 360.0),
 							fillStyle: '#000000'
 						})
-						addText(context, '力矩 (Nm)', -40, -30);
+						addText(context, '力矩 (NM)', -40, -30);
 						//addLine(context, 360 * scale_x, 0, 360 * scale_x, 600, "#ff0000"); // X轴测试
 						context.translate(-offset_x, -offset_y); // 移动坐标系
 
