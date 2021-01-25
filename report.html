@@ -21,16 +21,17 @@
 				text-align: center;
 			}
 
-			.header {
+			.header, header2 {
 				background-color: white;
 				text-align: justify;
 				text-align-last: justify;
 				width: 80px;
 				padding-left: 30px;
 			}
-			.header_data {
-				background-color: white;
+			.header2 {
+				width: 160px;
 			}
+			
 			.value {
 				border-bottom:1px solid black;
 			}
@@ -82,60 +83,55 @@
 			<!--训练数据-->
 			<table border="0" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
 				<tr>
-					<td colspan="6" align="center">
+					<td colspan="4" align="center">
 						<canvas id="canvas" width="900" height="580"></canvas>
 					</td>
 				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[0]}}</th>
-					<td>{{datas[0].EBERGY}}</td>
-					<th>{{arrColumn2[0]}}</th>
-					<td>8</td>
+				<!--row 1-->
+				<tr v-if="datas.length > 0">
+					<td class="header2">{{arrColumn1[0]}}：</td>
+					<td class="value">{{datas[0].EBERGY}}</td>
+					<td class="header2">{{arrColumn2[0]}}：</td>
+					<td class="value">8</td>
 				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[1]}}</th>
-					<td>{{(datas[0].EBERGY * 1000 / min2Sec(datas[0].TIME)).toFixed(2)}}</td>
-					<th>{{arrColumn2[1]}}</th>
-					<td>{{datas[0].SYMMERTYLEFT}}</td>
+				<!--row 2-->
+				<tr v-if="datas.length > 0">
+					<td class="header2">{{arrColumn1[1]}}：</td>
+					<td class="value">{{(datas[0].EBERGY * 1000 / min2Sec(datas[0].TIME)).toFixed(2)}}</td>
+					<td class="header2">{{arrColumn2[1]}}：</td>
+					<td class="value">{{datas[0].SYMMERTYLEFT}}</td>
 				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[2]}}</th>
-					<td>{{datas[0].VELOCITY}}</td>
-					<th>{{arrColumn2[2]}}</th>
-					<td>{{datas[0].SYMMERTYRIGHT}}</td>
+				<!--row 3-->
+				<tr v-if="datas.length > 0">
+					<td class="header2">{{arrColumn1[2]}}：</td>
+					<td class="value">{{datas[0].VELOCITY}}</td>
+					<td class="header2">{{arrColumn2[2]}}：</td>
+					<td class="value">{{datas[0].NOW}}</td>
 				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[3]}}</th>
-					<td>{{datas[0].NOW}}</td>
-					<th>{{arrColumn2[3]}}</th>
-					<td>{{datas[0].SYMMERTYLEFT}}</td>
-				</tr>
-				
-				<tr class="header_data">
-					<th>{{arrColumn1[4]}}</th>
-					<td>{{datas[0].TIME}}</td>
-					<th>{{arrColumn2[4]}}</th>
-					<td>{{datas[0].SYMMERTYRIGHT}}</td>
+				<!--row 4-->
+				<tr v-if="datas.length > 0">
+					<td class="header2">{{arrColumn1[3]}}：</td>
+					<td class="value">{{datas[0].SYMMERTYRIGHT}}</td>
+					<td class="header2">{{arrColumn2[3]}}：</td>
+					<td class="value">{{datas[0].SYMMERTYLEFT}}</td>
 				</tr>
 				
 				<tr>
-					<td class="header">评估结果：</td>
-					<td colspan="5" class="value"></td>
+					<td class="header2">评估结果：</td>
+					<td colspan="3" class="value"></td>
 				</tr>
 				<tr>
-					<td class="header">康复意见：</td>
-					<td colspan="5" class="value"></td>
+					<td class="header2">康复意见：</td>
+					<td colspan="3" class="value"></td>
 				</tr>
+			</table>
+			
+			<table>
 				<tr>
-					<td colspan="2" style="text-align: right;"></td>
 					<td class="header">治疗师：</td>
-					<td width="10%" class="value"></td>
+					<td class="value"></td>
 					<td class="header">日期：</td>
-					<td width="10%" class="value"></td>
+					<td class="value"></td>
 				</tr>
 			</table>
 		</div>
@@ -148,8 +144,8 @@
 				data: {
 					user: {},
 					datas: {},
-					arrColumn1: ['总功(千焦)', '平均功率', '速度(r/min)', '最大肌力', '时间(分钟)'],
-					arrColumn2: ['成功次数', '左右力矩比(%)-左', '左右力矩比(%)-右', '屈/伸力矩比(%)-左', '屈/伸力矩比(%)-右'],
+					arrColumn1: ['总功(千焦)', '平均功率', '速度(r/min)', '最大肌力'],
+					arrColumn2: ['时间(分钟)', '成功次数', '左右力矩比(%)-左', '左右力矩比(%)-右'],
 					counter: 0
 				},
 				mounted: function() {
