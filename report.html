@@ -1,4 +1,4 @@
-<!--2021-01-14, Bruce-->
+<!--2021-01-25, Bruce-->
 
 <!DOCTYPE html>
 <html>
@@ -7,7 +7,6 @@
 		<title></title>
 		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/canvas.js" type="text/javascript" charset="utf-8"></script>
-		<script src="data/REPORT_20201103_1.js" type="text/javascript" charset="utf-8"></script>
 
 		<style>
 			body {
@@ -38,13 +37,13 @@
 	<body>
 		<div id="app" v-cloak>
 			<!--报表标题-->
-			<div class="title">训练报告</div>
+			<div class="title">SL4等速训练报告</div>
 
 			<!--用户数据-->
 			<table border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
 				<tr>
 					<td width="20%" class="header">生成时间</td>
-					<td colspan="5">{{data.REPORTDATE}}</td>
+					<td colspan="5">{{datas.length > 0 ? datas[0].REPORTDATE : ''}}</td>
 				</tr>
 				<tr>
 					<td width="20%" class="header">用户</td>
@@ -72,37 +71,59 @@
 
 			<!--训练数据-->
 			<table border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
-				<tr class="header">
-					<th width="10%">序号</th>
-					<th width="45%">评估参数</th>
-					<th width="45%">评估结果</th>
+				<tr>
+					<td colspan="6" align="center">
+						<canvas id="canvas" width="900" height="580"></canvas>
+					</td>
 				</tr>
-				<tr v-for="(item, index) in arrColumn">
-					<td width="10%">{{index + 1}}</td>
-					<td width="45%">{{item}}</td>
-					<td width="45%">{{arrColumnVal[index]}}</td>
+				<tr class="header">
+					<th v-for="(item, index) in arrColumn1">{{item}}</th>
+				</tr>
+				<tr v-for="(data, index) in datas">
+					<td>{{index + 1}}</td>
+					<td>{{data.EBERGY}}</td>
+					<td>{{(data.EBERGY * 1000 / min2Sec(data.TIME)).toFixed(2)}}</td>
+					<td>{{data.VELOCITY}}</td>
+					<td>{{data.NOW}}</td>
+					<td>{{data.TIME}}</td>
+				</tr>
+				<tr class="header">
+					<th v-for="(item, index) in arrColumn2">{{item}}</th>
+				</tr>
+				<tr v-for="(data, index) in datas">
+					<td>{{index + 1}}</td>
+					<td>8</td>
+					<td>{{data.SYMMERTYLEFT}}</td>
+					<td>{{data.SYMMERTYRIGHT}}</td>
+					<td>{{data.SYMMERTYLEFT}}</td>
+					<td>{{data.SYMMERTYRIGHT}}</td>
 				</tr>
 				<tr>
-					<td colspan="3" align="center">
-						<canvas id="canvas" width="820" height="580"></canvas>
-					</td>
+					<td colspan="6" style="text-align: left;">评估结果：</td>
+				</tr>
+				<tr>
+					<td colspan="6" style="text-align: left;">康复意见：</td>
+				</tr>
+				<tr>
+					<td colspan="4" style="text-align: right;"></td>
+					<td style="text-align: left;">治疗师：</td>
+					<td style="text-align: left;">日期：</td>
 				</tr>
 			</table>
 		</div>
 
 		<script>
+			reloadAbleJSFn("Config", "data/REPORT_20201103_1.js?t=" + Math.random());
+			
 			var app = new Vue({
 				el: '#app',
 				data: {
 					user: {},
-					data: {},
-					arrColumn: ['训练主动里程', '训练被动里程', '训练合计里程', '训练主动时间', '训练被动时间',
-						'训练合计时间', '肌张力起始', '肌张力最终', '肌张力平均', '主动训练强度(瓦)',
-						'最大训练强度(瓦)', '痉挛次数', '总能量(千焦)', '总能量(千卡路里)', '平均对称性',
-						'平均协调成功率', '平均主动转速', '疼痛等级', '最大肌力', '平均肌力',
-						'发力次数', '最大心率', '平均心率', '最大血氧', '平均血氧'
+					datas: {},
+					arrColumn1: ['次数', '总功(千焦)', '平均功率', '速度(r/min)', '最大肌力', '时间(分钟)'],
+					arrColumn2: ['次数', '成功次数', '左右力矩比(%)-左', '左右力矩比(%)-右', '屈/伸力矩比(%)-左',
+						'屈/伸力矩比(%)-右'
 					],
-					arrColumnVal: [],
 					counter: 0
 				},
 				mounted: function() {
@@ -121,38 +142,7 @@
 				methods: {
 					parseData: function() {
 						this.user = JSON.parse(userData)[0];
-						this.data = JSON.parse(arrData)[0];
-						if (this.data) {
-							this.arrColumnVal[0] = this.data.MILEAGEINITATIVE;
-							this.arrColumnVal[1] = this.data.MILEAGEPASSIVE;
-							this.arrColumnVal[2] = this.data.MILEAGE;
-							this.arrColumnVal[3] = this.data.TIMEINITATIVE;
-							this.arrColumnVal[4] = this.data.TIMEPASSIVE;
-
-							this.arrColumnVal[5] = this.data.TIME;
-							this.arrColumnVal[6] = this.data.START;
-							this.arrColumnVal[7] = this.data.END;
-							this.arrColumnVal[8] = this.data.NOW;
-							this.arrColumnVal[9] = this.data.INTENSITY;
-
-							this.arrColumnVal[10] = this.data.INTENSITYMAX;
-							this.arrColumnVal[11] = this.data.SPASM;
-							this.arrColumnVal[12] = this.data.EBERGY;
-							this.arrColumnVal[13] = this.data.EBERGYCALORIE;
-							this.arrColumnVal[14] = this.data.SYMMERTYLEFT;
-
-							this.arrColumnVal[15] = this.data.COORDINATEAVERAGE;
-							this.arrColumnVal[16] = this.data.VELOCITY;
-							this.arrColumnVal[17] = this.data.PAIN;
-							this.arrColumnVal[18] = this.data.MUSCLEMAX;
-							this.arrColumnVal[19] = this.data.MUSCLEAVERAGE;
-
-							this.arrColumnVal[20] = this.data.MUSCLENUM;
-							this.arrColumnVal[21] = this.data.HEARTRATEMAX;
-							this.arrColumnVal[22] = this.data.HEARTRATE;
-							this.arrColumnVal[23] = this.data.BLOODMAX;
-							this.arrColumnVal[24] = this.data.BLOOD;
-						}
+						this.datas = JSON.parse(arrData);
 					},
 					showReport: function() {
 						var offset_x = 50;
@@ -215,29 +205,39 @@
 						//addLine(context, 360 * scale_x, 0, 360 * scale_x, 600, "#ff0000"); // X轴测试
 						context.translate(-offset_x, -offset_y); // 移动坐标系
 
-						setInterval(function() {
-							// 清除画布
-							context.translate(offset_x + 1, offset_y + 5);
-							clearCanvas(context, width, height - 10);
-							context.translate(-(offset_x + 1), -(offset_y + 5));
-							
-							// 曲线数据
-							var arrPoint = [];
-							for (var i = 0; i < 360; i++) {
-								if (i % 10 == 0) {
-									arrPoint.push({
-										x: i * scale_x,
-										y: Number(41 * Math.random() - 20) * scale_y
-									});
-								}
+						//setInterval(function() {
+						// 清除画布
+						context.translate(offset_x + 1, offset_y + 5);
+						//clearCanvas(context, width, height - 10);
+						context.translate(-(offset_x + 1), -(offset_y + 5));
+
+						// 曲线数据
+						var arrPoint = [];
+						for (var i = 0; i < 360; i++) {
+							if (i % 10 == 0) {
+								arrPoint.push({
+									x: i * scale_x,
+									y: Number(41 * Math.random() - 20) * -scale_y
+								});
 							}
-							
-							// 绘制曲线
-							context.translate(offset_x, height / 2 + offset_y);
-							addCurve(context, arrPoint);
+						}
+
+						// 绘制曲线
+						context.translate(offset_x, height / 2 + offset_y);
+						addCurve(context, arrPoint);
 						//addLine(context, 0, 20 * -scale_y, width, 20 * -scale_y, "#ff0000"); // Y轴测试
-							context.translate(-offset_x, -(height / 2 + offset_y));
-						}, 2 * 1000);
+						context.translate(-offset_x, -(height / 2 + offset_y));
+						//}, 2 * 1000);
+					},
+					min2Sec: function(min) {
+						var index = min.indexOf(":");
+						if (index > 0) {
+							var m = min.substr(0, index);
+							var s = min.substring(index + 1);
+							//console.log(m + "," + s);
+							return Number(m) * 60 + Number(s);
+						}
+						return 0;
 					},
 					// var selLang = _self.convertLanguage(_self.getQueryString("mSelLanguage"));
 					getQueryString: function(name) {
@@ -246,23 +246,6 @@
 						if (r != null)
 							return unescape(r[2]);
 						return null;
-					},
-					// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
-					reloadAbleJSFn: function(id, newJS) {
-						try {
-							var oldjs = null;
-							var t = null;
-							var oldjs = document.getElementById(id);
-							if (oldjs)
-								oldjs.parentNode.removeChild(oldjs);
-							var scriptObj = document.createElement("script");
-							scriptObj.src = newJS;
-							scriptObj.type = "text/javascript";
-							scriptObj.id = id;
-							document.getElementsByTagName("head")[0].appendChild(scriptObj);
-						} catch (e) {
-							alert(e.message);
-						}
 					}
 
 				}

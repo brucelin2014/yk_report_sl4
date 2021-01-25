@@ -6,11 +6,11 @@ var clearCanvas = function(ctx, width, height) {
 }
 
 // 画线
-var addLine = function(ctx, x0, y0, x1, y1) {
+var addLine = function(ctx, x0, y0, x1, y1, color) {
 	ctx.beginPath();
 	ctx.moveTo(x0, y0);
 	ctx.lineTo(x1, y1);
-	ctx.strokeStyle = "#000000";
+	ctx.strokeStyle = color;
 	ctx.stroke();
 }
 
@@ -75,4 +75,22 @@ var addCurve = function drawLine(ctx, points) {
 	}
 	ctx.quadraticCurveTo(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
 	ctx.stroke();
+}
+
+// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
+var reloadAbleJSFn = function(id, newJS) {
+	try {
+		var oldjs = null;
+		var t = null;
+		var oldjs = document.getElementById(id);
+		if (oldjs)
+			oldjs.parentNode.removeChild(oldjs);
+		var scriptObj = document.createElement("script");
+		scriptObj.src = newJS;
+		scriptObj.type = "text/javascript";
+		scriptObj.id = id;
+		document.getElementsByTagName("head")[0].appendChild(scriptObj);
+	} catch (e) {
+		alert(e.message);
+	}
 }
