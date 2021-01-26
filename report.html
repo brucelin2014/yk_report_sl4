@@ -7,10 +7,11 @@
 		<title></title>
 		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/canvas.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_20201103_1.js" type="text/javascript" charset="utf-8"></script>
 
 		<style>
 			body {
-				margin: 10;
+				margin: 10px;
 				padding: 0;
 			}
 
@@ -21,19 +22,31 @@
 				text-align: center;
 			}
 
-			.header, header2 {
+			.header,
+			.header1,
+			.header2,
+			.header3 {
 				background-color: white;
 				text-align: justify;
 				text-align-last: justify;
 				width: 80px;
-				padding-left: 30px;
+				height: 30px;
+				padding-left: 20px;
 			}
+
+			.header,
 			.header2 {
+				padding-left: 0px;
+			}
+
+			.header2,
+			.header3 {
 				width: 160px;
 			}
-			
+
 			.value {
-				border-bottom:1px solid black;
+				border-bottom: 1px solid black;
+				text-align: center;
 			}
 
 			canvas {
@@ -51,99 +64,111 @@
 			<div class="title">SL4等速训练报告</div>
 
 			<!--用户数据-->
-			<table border="0" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 900px;">
 				<tr>
-					<td width="20%" class="header">生成时间：</td>
-					<td colspan="5" class="value">{{datas.length > 0 ? datas[0].REPORTDATE : ''}}</td>
-				</tr>
-				<tr>
-					<td width="20%" class="header">用户：</td>
+					<td class="header">用户：</td>
 					<td colspan="3" class="value">{{user.USERNAME}}</td>
-					<td width="20%" class="header">用户编号：</td>
+					<td class="header1">用户编号：</td>
 					<td width="30%" class="value">{{user.NUM}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">性别：</td>
+					<td class="header">性别：</td>
 					<td class="value">{{user.SEX}}</td>
-					<td width="10%" class="header">年龄：</td>
+					<td class="header1">年龄：</td>
 					<td class="value">{{user.AGE}}</td>
-					<td width="20%" class="header">注册日期：</td>
-					<td width="30%" class="value">{{user.TIME}}</td>
+					<td class="header1">测试时间：</td>
+					<td class="value">{{data.REPORTDATE}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">病史：</td>
+					<td class="header">病史：</td>
 					<td colspan="5" class="value">{{user.HISTORY}}</td>
-				</tr>
-				<tr>
-					<td width="20%" class="header">备注：</td>
-					<td colspan="5" class="value">{{user.REMARK}}</td>
 				</tr>
 			</table>
 
 			<!--训练数据-->
-			<table border="0" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+			<table border="0" cellspacing="0" cellpadding="0" width="100%">
 				<tr>
-					<td colspan="4" align="center">
+					<td colspan="2" align="center">
 						<canvas id="canvas" width="900" height="580"></canvas>
 					</td>
 				</tr>
-				<!--row 1-->
-				<tr v-if="datas.length > 0">
-					<td class="header2">{{arrColumn1[0]}}：</td>
-					<td class="value">{{datas[0].EBERGY}}</td>
-					<td class="header2">{{arrColumn2[0]}}：</td>
-					<td class="value">8</td>
+				<tr>
+					<td width="50%">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+								<td class="header2">{{arrColumn1[0]}}：</td>
+								<td class="value">{{data.EBERGY}}</td>
+							</tr>
+							<tr>
+								<td class="header2">{{arrColumn1[1]}}：</td>
+								<td class="value">{{(data.EBERGY * 1000 / min2Sec(data.TIME)).toFixed(2)}}</td>
+							</tr>
+							<tr>
+								<td class="header2">{{arrColumn1[2]}}：</td>
+								<td class="value">{{data.VELOCITY}}</td>
+							</tr>
+							<tr>
+								<td class="header2">{{arrColumn1[3]}}：</td>
+								<td class="value">{{data.SYMMERTYRIGHT}}</td>
+							</tr>
+						</table>
+					</td>
+					<td width="50%">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+								<td class="header3">{{arrColumn2[0]}}：</td>
+								<td class="value">8</td>
+							</tr>
+							<tr>
+								<td class="header3">{{arrColumn2[1]}}：</td>
+								<td class="value">{{data.SYMMERTYLEFT}}</td>
+							</tr>
+							<tr>
+								<td class="header3">{{arrColumn2[2]}}：</td>
+								<td class="value">{{data.NOW}}</td>
+							</tr>
+							<tr>
+								<td class="header3">{{arrColumn2[3]}}：</td>
+								<td class="value">{{data.SYMMERTYLEFT}}</td>
+							</tr>
+						</table>
+					</td>
 				</tr>
-				<!--row 2-->
-				<tr v-if="datas.length > 0">
-					<td class="header2">{{arrColumn1[1]}}：</td>
-					<td class="value">{{(datas[0].EBERGY * 1000 / min2Sec(datas[0].TIME)).toFixed(2)}}</td>
-					<td class="header2">{{arrColumn2[1]}}：</td>
-					<td class="value">{{datas[0].SYMMERTYLEFT}}</td>
-				</tr>
-				<!--row 3-->
-				<tr v-if="datas.length > 0">
-					<td class="header2">{{arrColumn1[2]}}：</td>
-					<td class="value">{{datas[0].VELOCITY}}</td>
-					<td class="header2">{{arrColumn2[2]}}：</td>
-					<td class="value">{{datas[0].NOW}}</td>
-				</tr>
-				<!--row 4-->
-				<tr v-if="datas.length > 0">
-					<td class="header2">{{arrColumn1[3]}}：</td>
-					<td class="value">{{datas[0].SYMMERTYRIGHT}}</td>
-					<td class="header2">{{arrColumn2[3]}}：</td>
-					<td class="value">{{datas[0].SYMMERTYLEFT}}</td>
-				</tr>
-				
+			</table>
+
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 900px;">
 				<tr>
 					<td class="header2">评估结果：</td>
-					<td colspan="3" class="value"></td>
+					<td class="value"></td>
 				</tr>
 				<tr>
 					<td class="header2">康复意见：</td>
-					<td colspan="3" class="value"></td>
-				</tr>
-			</table>
-			
-			<table>
-				<tr>
-					<td class="header">治疗师：</td>
-					<td class="value"></td>
-					<td class="header">日期：</td>
 					<td class="value"></td>
 				</tr>
 			</table>
+
+			<div style="display: flex; flex-direction: row; justify-content: flex-end; padding-top: 15px; min-width: 900px;">
+				<div class="header">
+					治疗师：
+				</div>
+				<div class="value" style="width: 150px;">
+				</div>
+				<div class="header">
+					日期：
+				</div>
+				<div class="value" style="width: 150px;">
+				</div>
+			</div>
 		</div>
 
 		<script>
 			reloadAbleJSFn("Config", "data/REPORT_20201103_1.js?t=" + Math.random());
-			
+
 			var app = new Vue({
 				el: '#app',
 				data: {
 					user: {},
-					datas: {},
+					data: {},
 					arrColumn1: ['总功(千焦)', '平均功率', '速度(r/min)', '最大肌力'],
 					arrColumn2: ['时间(分钟)', '成功次数', '左右力矩比(%)-左', '左右力矩比(%)-右'],
 					counter: 0
@@ -151,11 +176,11 @@
 				mounted: function() {
 					console.log('mounted');
 					var that = this;
-					
+
 					setTimeout(function() {
 						that.parseData();
 						that.showReport();
-					}, 100);
+					}, 10);
 
 					that.$nextTick(function() {
 						console.log('mounted all');
@@ -164,7 +189,7 @@
 				methods: {
 					parseData: function() {
 						this.user = JSON.parse(userData)[0];
-						this.datas = JSON.parse(arrData);
+						this.data = JSON.parse(arrData)[0];
 					},
 					showReport: function() {
 						var offset_x = 50;
@@ -176,6 +201,17 @@
 
 						var canvas = document.getElementById("canvas");
 						var context = canvas.getContext("2d");
+						let width0 = canvas.width,
+							height0 = canvas.height;
+						if (window.devicePixelRatio) {
+							canvas.style.width = width0 + "px";
+							canvas.style.height = height0 + "px";
+							canvas.height = height0 * window.devicePixelRatio;
+							canvas.width = width0 * window.devicePixelRatio;
+							context.scale(window.devicePixelRatio, window.devicePixelRatio);
+						}
+						console.log(width0 + "," + height0);
+
 						context.strokeStyle = "#000000";
 						context.lineWidth = 2;
 
@@ -227,10 +263,8 @@
 						//addLine(context, 360 * scale_x, 0, 360 * scale_x, 600, "#ff0000"); // X轴测试
 						context.translate(-offset_x, -offset_y); // 移动坐标系
 
-						//setInterval(function() {
 						// 清除画布
 						context.translate(offset_x + 1, offset_y + 5);
-						//clearCanvas(context, width, height - 10);
 						context.translate(-(offset_x + 1), -(offset_y + 5));
 
 						// 曲线数据
@@ -249,9 +283,10 @@
 						addCurve(context, arrPoint);
 						//addLine(context, 0, 20 * -scale_y, width, 20 * -scale_y, "#ff0000"); // Y轴测试
 						context.translate(-offset_x, -(height / 2 + offset_y));
-						//}, 2 * 1000);
 					},
 					min2Sec: function(min) {
+						if (min == undefined)
+							return 0;
 						var index = min.indexOf(":");
 						if (index > 0) {
 							var m = min.substr(0, index);
