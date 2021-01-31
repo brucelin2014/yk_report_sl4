@@ -7,7 +7,7 @@
 		<title></title>
 		<script src="js/vue.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/canvas.js" type="text/javascript" charset="utf-8"></script>
-		<script src="data/REPORT_20201103_1.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT.js" type="text/javascript" charset="utf-8"></script>
 
 		<style>
 			body {
@@ -162,13 +162,15 @@
 		</div>
 
 		<script>
-			reloadAbleJSFn("Config", "data/REPORT_20201103_1.js?t=" + Math.random());
+			reloadAbleJSFn("Config", "data/REPORT.js?t=" + Math.random());
 
 			var app = new Vue({
 				el: '#app',
 				data: {
 					user: {},
 					data: {},
+					datasDraw: [],
+					
 					arrColumn1: ['总功(千焦)', '平均功率', '速度(r/min)', '最大肌力'],
 					arrColumn2: ['时间(分钟)', '成功次数', '左右力矩比(%)-左', '左右力矩比(%)-右'],
 					counter: 0
@@ -190,6 +192,7 @@
 					parseData: function() {
 						this.user = JSON.parse(userData)[0];
 						this.data = JSON.parse(arrData)[0];
+						this.datasDraw = JSON.parse(datas);
 					},
 					showReport: function() {
 						var offset_x = 50;
@@ -269,13 +272,20 @@
 
 						// 曲线数据
 						var arrPoint = [];
-						for (var i = 0; i < 360; i++) {
+						/*for (var i = 0; i < 360; i++) {
 							if (i % 10 == 0) {
 								arrPoint.push({
 									x: i * scale_x,
 									y: Number(41 * Math.random() - 20) * -scale_y
 								});
 							}
+						}*/
+						var size = this.datasDraw.length;
+						for (var i=0; i<size; i++) {
+							arrPoint.push({
+								x: this.datasDraw[i].BLACK * scale_x,
+								y: this.datasDraw[i].NOW * -scale_y
+							});
 						}
 
 						// 绘制曲线
