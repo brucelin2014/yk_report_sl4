@@ -7,7 +7,7 @@
 		<title></title>
 		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
 		<script src="js/canvas.js" type="text/javascript" charset="utf-8"></script>
-		<script src="data/REPORT.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT0.js" type="text/javascript" charset="utf-8"></script>
 		<script src="data/Config.js" type="text/javascript" charset="utf-8"></script>
 
 		<style>
@@ -167,7 +167,7 @@
 		</div>
 
 		<script>
-			reloadAbleJSFn("Data", "data/REPORT.js?t=" + Math.random());
+			reloadAbleJSFn("Data", "data/REPORT0.js?t=" + Math.random());
 			reloadAbleJSFn("Config", "data/Config.js?t=" + Math.random());
 
 			var app = new Vue({
@@ -202,37 +202,7 @@
 					parseData: function() {
 						this.user = JSON.parse(userData)[0];
 						this.data = JSON.parse(arrData)[0];
-						this.initDrawData();
-						//this.datasDraw = JSON.parse(datas);
-						
-						var datasDraw = JSON.parse(datas);
-						var size = datasDraw.length;
-						for (var i=0; i < size; i++) {
-							this.updateDrawData(datasDraw[i]);
-						}
-						console.log(JSON.stringify(this.datasDraw));
-					},
-					initDrawData: function() {
-						this.datasDraw = [];
-						this.datasDraw.push({GROUP_INDEX: 0, TIMES_INDEX: 0, NOW_AVG: 0});
-						
-						var group = this.data.GROUP;
-						var times = this.data.TIMES;
-						for (var i = 1; i <= group; i++) {
-							for (var j = 1; j <= times; j++) {
-								this.datasDraw.push({GROUP_INDEX: i, TIMES_INDEX: j, NOW_AVG: 0});
-							}
-						}
-					},
-					updateDrawData: function(drawData) {
-						var size = this.datasDraw.length;
-						for (var i=0; i< size; i++) {
-							var data = this.datasDraw[i];
-							if ((data.GROUP_INDEX - 1) == drawData.GROUP_INDEX && (data.TIMES_INDEX - 1) == drawData.TIMES_INDEX) {
-								data.NOW_AVG = drawData.NOW_AVG;
-								break;
-							}
-						}
+						this.datasDraw = JSON.parse(datas);
 					},
 					showReport: function() {
 						var offset_x = 50;
@@ -263,16 +233,15 @@
 							return;
 
 						// X轴
-						var dataSize = this.datasDraw.length;
 						context.translate(offset_x, offset_y); // 移动坐标系
 						addLine(context, 0, height, width, height, "#000000");
-						// 次数刻度值
-						var width_x = width / dataSize;
-						for (var i = 0; i < dataSize; i++) {
+						// 角度刻度值
+						var width_x = width / 10;
+						for (var i = 0; i < 10; i++) {
 							if (i > 0) {
 								addLine(context, width_x * i, height, width_x * i, height + 8, "#000000");
 							}
-							addText(context, i + '', width_x * i - 5, height + 15);
+							addText(context, 360 / 9 * i + '', width_x * i - 10, height + 15);
 						}
 						// X轴箭头
 						drawPolygon(context, {
@@ -282,7 +251,7 @@
 							r: 8,
 							fillStyle: '#000000'
 						})
-						addText(context, '次数', width - 25, height + 15);
+						addText(context, '角度 (°)', width - 25, height + 15);
 
 						// Y轴
 						var height_y = height / 10;
@@ -303,7 +272,7 @@
 							angle: Math.PI * 2 * (-90 / 360.0),
 							fillStyle: '#000000'
 						})
-						addText(context, '平均力矩 (Nm)', -40, -30);
+						addText(context, '力矩 (Nm)', -40, -30);
 						//addLine(context, 360 * scale_x, 0, 360 * scale_x, 600, "#ff0000"); // X轴测试
 						context.translate(-offset_x, -offset_y); // 移动坐标系
 
@@ -324,8 +293,8 @@
 						var size = this.datasDraw.length;
 						for (var i=0; i<size; i++) {
 							arrPoint.push({
-								x: width_x * i,
-								y: this.datasDraw[i].NOW_AVG * -scale_y
+								x: this.datasDraw[i].BLACK * scale_x,
+								y: this.datasDraw[i].NOW * -scale_y
 							});
 						}
 
