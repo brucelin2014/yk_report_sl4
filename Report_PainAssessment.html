@@ -104,14 +104,6 @@
 								<td class="header2">{{arrColumn1[0]}}：</td>
 								<td class="value">{{data.PAINMAX}}</td>
 							</tr>
-							<tr>
-								<td class="header2">{{arrColumn1[1]}}：</td>
-								<td class="value">{{data.VELOCITY}}</td>
-							</tr>
-							<tr>
-								<td class="header2">{{arrColumn1[2]}}：</td>
-								<td class="value">{{data.MUSCLEMAX}}</td>
-							</tr>
 						</table>
 					</td>
 					<td width="50%">
@@ -120,14 +112,6 @@
 								<td class="header3">{{arrColumn2[0]}}：</td>
 								<td class="value">{{data.PAINMIN}}</td>
 							</tr>
-							<tr>
-								<td class="header3">{{arrColumn2[1]}}：</td>
-								<td class="value">{{data.SYMMERTYLEFT}}</td>
-							</tr>
-							<tr>
-								<td class="header3">{{arrColumn2[2]}}：</td>
-								<td class="value">{{data.SYMMERTYRIGHT}}</td>
-							</tr>
 						</table>
 					</td>
 				</tr>
@@ -135,7 +119,7 @@
 
 			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 900px;">
 				<tr>
-					<td class="header2">评估结果：</td>
+					<td class="header2">疼痛等级：</td>
 					<td class="value">{{data.PAIN}}</td>
 				</tr>
 				<tr>
@@ -168,8 +152,8 @@
 					user: {},
 					data: {},
 					
-					arrColumn1: ['最大角度', '速度(r/min)', '最大肌力'],
-					arrColumn2: ['最小角度', '左右力矩比(%)-左', '左右力矩比(%)-右'],
+					arrColumn1: ['开始角度'],
+					arrColumn2: ['结束角度'],
 					counter: 0,
 					hospitalName: '',
 					logoPath: ''
