@@ -1,0 +1,316 @@
+<!--2021-03-01, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/canvas.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_PainAssessment.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/Config.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			body {
+				margin: 10px;
+				padding: 0;
+			}
+
+			.title {
+				background-color: white;
+				padding: 5px;
+				font-size: 23px;
+				text-align: center;
+			}
+
+			.header,
+			.header1,
+			.header2,
+			.header3 {
+				background-color: white;
+				text-align: justify;
+				text-align-last: justify;
+				width: 80px;
+				height: 30px;
+				padding-left: 20px;
+			}
+
+			.header,
+			.header2 {
+				padding-left: 0px;
+			}
+
+			.header2,
+			.header3 {
+				width: 160px;
+			}
+
+			.value {
+				border-bottom: 1px solid black;
+				text-align: center;
+			}
+
+			canvas {
+				border: 0px dashed black;
+			}
+
+			[v-cloak] {
+				display: none
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--报表标题-->
+			<div style="display: flex; justify-content: center; align-items: center;">
+				<img :src="logoPath" height="40"/>
+				<div class="title" style="margin-left: 30px; font-size: 30px;">{{hospitalName}}</div>
+			</div>
+			<div class="title">疼痛评估报告</div>
+
+			<!--用户数据-->
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 900px;">
+				<tr>
+					<td class="header">用户：</td>
+					<td colspan="3" class="value">{{user.USERNAME}}</td>
+					<td class="header1">用户编号：</td>
+					<td width="30%" class="value">{{user.NUM}}</td>
+				</tr>
+				<tr>
+					<td class="header">性别：</td>
+					<td class="value">{{user.SEX}}</td>
+					<td class="header1">年龄：</td>
+					<td class="value">{{user.AGE}}</td>
+					<td class="header1">测试时间：</td>
+					<td class="value">{{data.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td class="header">病史：</td>
+					<td colspan="5" class="value">{{user.HISTORY}}</td>
+				</tr>
+			</table>
+
+			<!--训练数据-->
+			<table border="0" cellspacing="0" cellpadding="0" width="100%">
+				<tr>
+					<td colspan="2" align="center">
+						<canvas id="canvas" width="600" height="600"></canvas>
+					</td>
+				</tr>
+				<tr>
+					<td width="50%">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+								<td class="header2">{{arrColumn1[0]}}：</td>
+								<td class="value">{{data.PAINMAX}}</td>
+							</tr>
+							<tr>
+								<td class="header2">{{arrColumn1[1]}}：</td>
+								<td class="value">{{data.VELOCITY}}</td>
+							</tr>
+							<tr>
+								<td class="header2">{{arrColumn1[2]}}：</td>
+								<td class="value">{{data.MUSCLEMAX}}</td>
+							</tr>
+						</table>
+					</td>
+					<td width="50%">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr>
+								<td class="header3">{{arrColumn2[0]}}：</td>
+								<td class="value">{{data.PAINMIN}}</td>
+							</tr>
+							<tr>
+								<td class="header3">{{arrColumn2[1]}}：</td>
+								<td class="value">{{data.SYMMERTYLEFT}}</td>
+							</tr>
+							<tr>
+								<td class="header3">{{arrColumn2[2]}}：</td>
+								<td class="value">{{data.SYMMERTYRIGHT}}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 900px;">
+				<tr>
+					<td class="header2">评估结果：</td>
+					<td class="value">{{data.PAIN}}</td>
+				</tr>
+				<tr>
+					<td class="header2">康复意见：</td>
+					<td class="value"></td>
+				</tr>
+			</table>
+
+			<div style="display: flex; flex-direction: row; justify-content: flex-end; padding-top: 15px; min-width: 900px;">
+				<div class="header">
+					治疗师：
+				</div>
+				<div class="value" style="width: 150px;">
+				</div>
+				<div class="header" style="padding-left: 20px;">
+					日期：
+				</div>
+				<div class="value" style="width: 150px;">
+				</div>
+			</div>
+		</div>
+
+		<script>
+			reloadAbleJSFn("Data", "data/REPORT_PainAssessment.js?t=" + Math.random());
+			reloadAbleJSFn("Config", "data/Config.js?t=" + Math.random());
+
+			var app = new Vue({
+				el: '#app',
+				data: {
+					user: {},
+					data: {},
+					
+					arrColumn1: ['最大角度', '速度(r/min)', '最大肌力'],
+					arrColumn2: ['最小角度', '左右力矩比(%)-左', '左右力矩比(%)-右'],
+					counter: 0,
+					hospitalName: '',
+					logoPath: ''
+				},
+				mounted: function() {
+					console.log('mounted');
+					var that = this;
+
+					setTimeout(function() {
+						that.parseData();
+						that.showReport();
+						that.hospitalName = HospitalName;
+						that.logoPath = LogoPath;
+					}, 10);
+
+					that.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.user = JSON.parse(userData)[0];
+						this.data = JSON.parse(arrData)[0];
+					},
+					showReport: function() {
+						var offset_x = 50;
+						var offset_y = 50;
+						var width = 250 * 2;
+						var height = 250 * 2;
+
+						var canvas = document.getElementById("canvas");
+						var context = canvas.getContext("2d");
+						let width0 = canvas.width,
+							height0 = canvas.height;
+						if (window.devicePixelRatio) {
+							canvas.style.width = width0 + "px";
+							canvas.style.height = height0 + "px";
+							canvas.height = height0 * window.devicePixelRatio;
+							canvas.width = width0 * window.devicePixelRatio;
+							context.scale(window.devicePixelRatio, window.devicePixelRatio);
+						}
+						console.log(width0 + "," + height0);
+
+						context.strokeStyle = "#000000";
+						context.lineWidth = 2;
+
+						this.counter++;
+						if (this.counter % 2 == 0)
+							return;
+
+						// X轴
+						context.translate(offset_x, offset_y); // 移动坐标系
+						addLine(context, 0, height / 2, width, height / 2, "#000000");
+
+						// Y轴
+						var height_y = height / 10;
+						addLine(context, width / 2, 0, width / 2, height, "#000000");
+						
+						// 角度值
+						addText(context, '0°', width + 20, height / 2 - 5);
+						addText(context, '90°', width / 2 - 10, height + 20);
+						addText(context, '180°', 0 - 50, height / 2 - 5);
+						addText(context, '270°', width / 2 - 10, 0 - 30);
+						
+						// 画圆
+						context.translate(width / 2, height / 2); // 移动坐标系
+						addArc(context, 0, 0, width / 2 - 30, "#000000");
+						
+						context.lineWidth = 5;
+						// 最大角度
+						context.rotate(this.data.PAINMAX * Math.PI / 180);
+						addLine(context, 0, 0, width / 2 - 10, 0, "#08C1F9");
+						
+						// 箭头
+						context.translate(width / 2 - 10, 0); // 移动坐标系
+						drawPolygon(context, {
+							x: 0,
+							y: 0,
+							num: 3,
+							r: 8,
+							angle: 45,
+							fillStyle: '#08C1F9'
+						})
+						context.translate(-(width / 2 - 10), 0); // 移动坐标系
+						context.rotate(-this.data.PAINMAX * Math.PI / 180);
+						
+						// 最小角度
+						context.rotate(this.data.PAINMIN * Math.PI / 180);
+						addLine(context, 0, 0, width / 2 - 10, 0, "#5BC232");
+						
+						// 箭头
+						context.translate(width / 2 - 10, 0); // 移动坐标系
+						drawPolygon(context, {
+							x: 0,
+							y: 0,
+							num: 3,
+							r: 8,
+							angle: 45,
+							fillStyle: '#5BC232'
+						})
+						context.translate(-(width / 2 - 10), 0); // 移动坐标系
+						context.rotate(-this.data.PAINMIN * Math.PI / 180);
+						
+						// 扇形填充
+						context.beginPath();
+						context.fillStyle = "rgba(91,194,50,0.4)";
+						context.arc(0, 0, width / 2 - 30, this.data.PAINMAX * Math.PI / 180, this.data.PAINMIN * Math.PI / 180, true);
+						context.lineTo(0, 0);
+						context.fill();
+						
+						context.translate(-width / 2, -height / 2); // 移动坐标系
+						
+						context.translate(-offset_x, -offset_y); // 移动坐标系
+						
+						// 清除画布
+						context.translate(offset_x + 1, offset_y + 5);
+						context.translate(-(offset_x + 1), -(offset_y + 5));
+					},
+					min2Sec: function(min) {
+						if (min == undefined)
+							return 0;
+						var index = min.indexOf(":");
+						if (index > 0) {
+							var m = min.substr(0, index);
+							var s = min.substring(index + 1);
+							//console.log(m + "," + s);
+							return Number(m) * 60 + Number(s);
+						}
+						return 0;
+					},
+					// var selLang = _self.convertLanguage(_self.getQueryString("mSelLanguage"));
+					getQueryString: function(name) {
+						var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+						var r = window.location.search.substr(1).match(reg);
+						if (r != null)
+							return unescape(r[2]);
+						return null;
+					}
+
+				}
+			})
+		</script>
+	</body>
+</html>

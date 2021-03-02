@@ -14,6 +14,14 @@ var addLine = function(ctx, x0, y0, x1, y1, color) {
 	ctx.stroke();
 }
 
+// 画圆
+var addArc = function(ctx, x0, y0, r, color) {
+	ctx.beginPath();
+	ctx.arc(x0, y0, r, 0, 2 * Math.PI, true);
+	ctx.strokeStyle = color;
+	ctx.stroke();
+}
+
 // 文字
 var addText = function(ctx, txt, left, top, color) {
 	ctx.beginPath();
