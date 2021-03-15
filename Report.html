@@ -1,0 +1,260 @@
+<!--2021-03-15, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="js/canvas.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/Config.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			body {
+				margin: 10px;
+				padding: 0;
+			}
+
+			.title {
+				background-color: white;
+				padding: 5px;
+				font-size: 23px;
+				text-align: center;
+			}
+
+			.header,
+			.header1,
+			.header2,
+			.header3 {
+				background-color: white;
+				text-align: justify;
+				text-align-last: justify;
+				width: 80px;
+				height: 30px;
+				padding-left: 20px;
+			}
+
+			.header,
+			.header2 {
+				padding-left: 0px;
+			}
+
+			.header2,
+			.header3 {
+				width: 160px;
+			}
+
+			.value {
+				border-bottom: 1px solid black;
+				text-align: center;
+			}
+
+			canvas {
+				border: 0px dashed black;
+			}
+
+			[v-cloak] {
+				display: none
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--报表标题-->
+			<div style="display: flex; justify-content: center; align-items: center;">
+				<img :src="logoPath" height="40"/>
+				<div class="title" style="margin-left: 30px; font-size: 30px; min-width: 450px;">{{hospitalName}}</div>
+			</div>
+			<div class="title">{{data.MODE}}报告</div>
+
+			<!--用户数据-->
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 800px;">
+				<tr>
+					<td class="header">用户：</td>
+					<td colspan="3" class="value">{{user.USERNAME}}</td>
+					<td class="header1">用户编号：</td>
+					<td width="30%" class="value">{{user.NUM}}</td>
+				</tr>
+				<tr>
+					<td class="header">性别：</td>
+					<td class="value">{{user.SEX}}</td>
+					<td class="header1">年龄：</td>
+					<td class="value">{{user.AGE}}</td>
+					<td class="header1">测试时间：</td>
+					<td class="value">{{data.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td class="header">病史：</td>
+					<td colspan="5" class="value">{{user.HISTORY}}</td>
+				</tr>
+			</table>
+
+			<!--训练数据-->
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 800px; margin-top: 10px;">
+				<tr style="vertical-align: top;">
+					<td width="50%">
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr v-for="(item, index) in arrColumn1" 
+							v-if="(index == 0 || index == 3 || index == 9) && isShowInitative()">
+								<td class="header2">{{item}}：</td>
+								<td class="value">{{arrColumn1_Val[index]}}</td>
+							</tr>
+							<tr v-else-if="index != 0 && index != 3 && index != 9">
+								<td class="header2">{{item}}：</td>
+								<td class="value">{{arrColumn1_Val[index]}}</td>
+							</tr>
+						</table>
+					</td>
+					<td>
+						<table border="0" cellspacing="0" cellpadding="0" width="100%">
+							<tr v-for="(item, index) in arrColumn2" v-if="index == 3 && isShowCoordinate()">
+								<td class="header3">{{item}}：</td>
+								<td class="value">{{arrColumn2_Val[index]}}</td>
+							</tr>
+							<tr v-else-if="index != 3">
+								<td class="header3">{{item}}：</td>
+								<td class="value">{{arrColumn2_Val[index]}}</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+			</table>
+
+			<table border="0" cellspacing="0" cellpadding="0" width="100%" style="min-width: 800px; margin-top: 10px;">
+				<tr>
+					<td class="header2">康复意见：</td>
+					<td class="value"></td>
+				</tr>
+			</table>
+
+			<div style="display: flex; flex-direction: row; justify-content: flex-end; padding-top: 15px; min-width: 800px;">
+				<div class="header">
+					治疗师：
+				</div>
+				<div class="value" style="width: 150px;">
+				</div>
+				<div class="header" style="padding-left: 20px;">
+					日期：
+				</div>
+				<div class="value" style="width: 150px;">
+				</div>
+			</div>
+		</div>
+
+		<script>
+			reloadAbleJSFn("Data", "data/REPORT.js?t=" + Math.random());
+			reloadAbleJSFn("Config", "data/Config.js?t=" + Math.random());
+
+			var app = new Vue({
+				el: '#app',
+				data: {
+					user: {},
+					data: {},
+					
+					arrColumn1: ['训练主动里程','训练被动里程','训练合计里程','训练主动时间','训练被动时间',
+					'训练合计时间','肌张力起始','肌张力最终','肌张力平均','主动训练强度(瓦)',
+					'最大训练强度(瓦)','痉挛次数'],
+					arrColumn1_Val: [],
+					
+					arrColumn2: ['总能量(千焦)','总能量(千卡路里)','平均对称性','平均协调成功率','平均主动转速',
+					'疼痛等级','最大肌力','平均肌力','发力次数','最大心率',
+					'平均心率','最大血氧','平均血氧'],
+					arrColumn2_Val: [],
+					
+					counter: 0,
+					hospitalName: '',
+					logoPath: ''
+				},
+				mounted: function() {
+					console.log('mounted');
+					var that = this;
+
+					setTimeout(function() {
+						that.parseData();
+						that.hospitalName = HospitalName;
+						that.logoPath = LogoPath;
+					}, 10);
+
+					that.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.user = JSON.parse(userData)[0];
+						this.data = JSON.parse(arrData)[0];
+						this.updateData();
+					},
+					updateData: function() {
+						if (this.data) {
+							this.arrColumn1_Val[0] = this.data.MILEAGEINITATIVE;
+							this.arrColumn1_Val[1] = this.data.MILEAGEPASSIVE;
+							this.arrColumn1_Val[2] = this.data.MILEAGE;
+							this.arrColumn1_Val[3] = this.data.TIMEINITATIVE;
+							this.arrColumn1_Val[4] = this.data.TIMEPASSIVE;
+						
+							this.arrColumn1_Val[5] = this.data.TIME;
+							this.arrColumn1_Val[6] = this.data.START;
+							this.arrColumn1_Val[7] = this.data.END;
+							this.arrColumn1_Val[8] = this.data.NOW;
+							this.arrColumn1_Val[9] = this.data.INTENSITY;
+						
+							this.arrColumn1_Val[10] = this.data.INTENSITYMAX;
+							this.arrColumn1_Val[11] = this.data.SPASM;
+							
+							this.arrColumn2_Val[0] = this.data.EBERGY;
+							this.arrColumn2_Val[1] = this.data.EBERGYCALORIE;
+							this.arrColumn2_Val[2] = this.data.SYMMERTYLEFT;
+						
+							this.arrColumn2_Val[3] = this.data.COORDINATEAVERAGE;
+							this.arrColumn2_Val[4] = this.data.VELOCITY;
+							this.arrColumn2_Val[5] = this.data.PAIN;
+							this.arrColumn2_Val[6] = this.data.MUSCLEMAX;
+							this.arrColumn2_Val[7] = this.data.MUSCLEAVERAGE;
+						
+							this.arrColumn2_Val[8] = this.data.MUSCLENUM;
+							this.arrColumn2_Val[9] = this.data.HEARTRATEMAX;
+							this.arrColumn2_Val[10] = this.data.HEARTRATE;
+							this.arrColumn2_Val[11] = this.data.BLOODMAX;
+							this.arrColumn2_Val[12] = this.data.BLOOD;
+						}
+					},
+					min2Sec: function(min) {
+						if (min == undefined)
+							return 0;
+						var index = min.indexOf(":");
+						if (index > 0) {
+							var m = min.substr(0, index);
+							var s = min.substring(index + 1);
+							//console.log(m + "," + s);
+							return Number(m) * 60 + Number(s);
+						}
+						return 0;
+					},
+					// var selLang = _self.convertLanguage(_self.getQueryString("mSelLanguage"));
+					getQueryString: function(name) {
+						var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+						var r = window.location.search.substr(1).match(reg);
+						if (r != null)
+							return unescape(r[2]);
+						return null;
+					},
+					// 是否显示协调成功率
+					isShowCoordinate: function() {
+						if (this.data.MODE == '协调能力程序')
+							return true;
+						return false;
+					},
+					// 是否显示主动参数
+					isShowInitative: function() {
+						if (this.data.MODE == '放松程序' || this.data.MODE == '骨科训练')
+							return false;
+						return true;
+					}
+
+				}
+			})
+		</script>
+	</body>
+</html>
