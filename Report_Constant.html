@@ -210,7 +210,7 @@
 						for (var i=0; i < size; i++) {
 							this.updateDrawData(datasDraw[i]);
 						}
-						console.log(JSON.stringify(this.datasDraw));
+						//console.log(JSON.stringify(this.datasDraw));
 					},
 					initDrawData: function() {
 						this.datasDraw = [];
@@ -253,7 +253,7 @@
 							canvas.width = width0 * window.devicePixelRatio;
 							context.scale(window.devicePixelRatio, window.devicePixelRatio);
 						}
-						console.log(width0 + "," + height0);
+						//console.log(width0 + "," + height0);
 
 						context.strokeStyle = "#000000";
 						context.lineWidth = 2;
@@ -264,15 +264,20 @@
 
 						// X轴
 						var dataSize = this.datasDraw.length;
+						var step = Math.ceil((dataSize - 1) * 0.1);
+						//console.log(step);
+						
 						context.translate(offset_x, offset_y); // 移动坐标系
 						addLine(context, 0, height, width, height, "#000000");
 						// 次数刻度值
 						var width_x = width / dataSize;
 						for (var i = 0; i < dataSize; i++) {
-							if (i > 0) {
-								addLine(context, width_x * i, height, width_x * i, height + 8, "#000000");
+							if (i % step == 0) {
+								if (i > 0) {
+									addLine(context, width_x * i, height, width_x * i, height + 8, "#000000");
+								}
+								addText(context, i + '', width_x * i - 5, height + 15);
 							}
-							addText(context, i + '', width_x * i - 5, height + 15);
 						}
 						// X轴箭头
 						drawPolygon(context, {
@@ -282,7 +287,7 @@
 							r: 8,
 							fillStyle: '#000000'
 						})
-						addText(context, '次数', width - 5, height + 15);
+						addText(context, '次数', width + 15, height - 5);
 
 						// Y轴
 						var height_y = height / 10;
@@ -321,8 +326,9 @@
 								});
 							}
 						}*/
-						var size = this.datasDraw.length;
-						for (var i=0; i<size; i++) {
+						
+						//var size = this.datasDraw.length;
+						for (var i=0; i<dataSize; i++) {
 							arrPoint.push({
 								x: width_x * i,
 								y: this.datasDraw[i].NOW_AVG * -scale_y
