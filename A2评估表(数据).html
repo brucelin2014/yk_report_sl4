@@ -1,0 +1,211 @@
+<!--2021-11-01, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_A2_EVALUATE.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			body {
+				margin: 15px;
+				padding: 0;
+				word-break: break-all;
+			}
+
+			#tdUser {
+				font-size: 23px;
+			}
+
+			#tdData {
+				font-size: 17px;
+			}
+
+			.title {
+				background-color: lightgray;
+				padding: 17px;
+				font-size: 33px;
+				text-align: center;
+				margin: 0;
+			}
+
+			.header {
+				background-color: lightgray
+			}
+
+			[v-cloak] {
+				display: none
+			}
+
+			td {
+				height: 35px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--用户数据-->
+			<table id="tdUser" border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+				<tr>
+					<td colspan="8" class="header">
+						<!--报表标题-->
+						<div class="title">{{isEngLang() ? 'Training Information Table' : '上肢关节活动范围表'}}</div>
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">{{isEngLang() ? 'Generation Time' : '生成时间'}}</td>
+					<td colspan="7">{{user.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">{{isEngLang() ? 'User' : '用户'}}</td>
+					<td colspan="3">{{user.USERNAME}}</td>
+					<td width="20%" class="header">{{isEngLang() ? 'User ID' : '用户编号'}}</td>
+					<td width="15%">{{user.NUM}}</td>
+					<td width="20%" class="header">{{isEngLang() ? 'Myodynamic Level' : '肌力等级'}}</td>
+					<td width="5%">{{user.MGRADE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">{{isEngLang() ? 'Gender' : '性别'}}</td>
+					<td>{{getSex(user.SEX)}}</td>
+					<td width="10%" class="header">{{isEngLang() ? 'Age' : '年龄'}}</td>
+					<td>{{user.AGE}}</td>
+					<td width="20%" class="header">{{isEngLang() ? 'Register Date' : '注册日期'}}</td>
+					<td colspan="3">{{user.TIME}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">{{isEngLang() ? 'Medical History' : '病史'}}</td>
+					<td colspan="7">{{user.HISTORY}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">{{isEngLang() ? 'Remarks' : '备注'}}</td>
+					<td colspan="7">{{user.REMARK}}</td>
+				</tr>
+			</table>
+
+			<!--评估数据-->
+			<table id="tdData" border="1" cellspacing="0" cellpadding="5" width="100%"
+				style="text-align: center; margin-top: 0px;">
+				<tr class="header">
+					<td width="5%">{{isEngLang() ? 'No.' : '次数'}}</td>
+					<td width="5%">{{isEngLang() ? 'Arm' : '手臂'}}</td>
+					<td width="5%">{{isEngLang() ? 'Adduction of shoulder joints' : '肩内收'}}</td>
+					<td width="5%">{{isEngLang() ? 'Abduction of shoulder joints' : '肩外展'}}</td>
+					<td width="8%">{{isEngLang() ? 'Adduction & abduction of shoulder joints' : '肩内收外展'}}</td>
+					
+					<td width="5%">{{isEngLang() ? 'Anteflect of shoulder joints' : '肩前屈'}}</td>
+					<td width="5%">{{isEngLang() ? 'Elbow Flexions' : '肘屈曲'}}</td>
+					<td width="8%">{{isEngLang() ? 'Pronation of radioulnar joints' : '尺桡旋前'}}</td>
+					<td width="8%">{{isEngLang() ? 'Supination of radioulnar joints' : '尺桡旋后'}}</td>
+					<td width="8%">{{isEngLang() ? 'Pronation & supination of radioulnar joints' : '尺桡旋前旋后'}}</td>
+					
+					<td width="5%">{{isEngLang() ? 'Grip' : '握力'}}</td>
+					<td width="10%">{{isEngLang() ? 'Evaluation Times' : '评估时间'}}</td>
+				</tr>
+				<tr v-for="(item, index) in data">
+					<td>{{index + 1}}</td>
+					<td>{{item.ARM}}</td>
+					<td>{{item.JIANNEI}}</td>
+					<td>{{item.JIANWAI}}</td>
+					<td>{{item.JIANNEIWAI}}</td>
+					
+					<td>{{item.JIANQIAN}}</td>
+					<td>{{item.ZHOU}}</td>
+					<td>{{item.CHIRAOQIAN}}</td>
+					<td>{{item.CHIRAOHOU}}</td>
+					<td>{{item.CHIRAOQIANHOU}}</td>
+					
+					<td>{{item.GRIP}}</td>
+					<td>{{getDateTime(item.ETime)}}</td>
+				</tr>
+			</table>
+		</div>
+
+		<script>
+			var app = new Vue({
+				el: '#app',
+				data: {
+					lang: 0, // 0-chs, 1-eng
+					user: {},
+					data: {},
+					counter: 0
+				},
+				created: function() {
+					//this.updateLang();
+				},
+				mounted: function() {
+					console.log('mounted');
+					var that = this;
+					this.updateLang();
+					
+					setTimeout(function() {
+						that.parseData();
+					}, 100);
+
+					that.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.user = JSON.parse(userData)[0];
+						this.data = JSON.parse(arrData);
+						//console.log(arrData);
+					},
+					// var selLang = _self.convertLanguage(_self.getQueryString("mSelLanguage"));
+					getQueryString: function(name) {
+						var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+						var r = window.location.search.substr(1).match(reg);
+						if (r != null)
+							return unescape(r[2]);
+						return null;
+					},
+					// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
+					reloadAbleJSFn: function(id, newJS) {
+						try {
+							var oldjs = null;
+							var t = null;
+							var oldjs = document.getElementById(id);
+							if (oldjs)
+								oldjs.parentNode.removeChild(oldjs);
+							var scriptObj = document.createElement("script");
+							scriptObj.src = newJS;
+							scriptObj.type = "text/javascript";
+							scriptObj.id = id;
+							document.getElementsByTagName("head")[0].appendChild(scriptObj);
+						} catch (e) {
+							alert(e.message);
+						}
+					},
+					// 英语语言
+					isEngLang: function() {
+						return this.lang == 1;
+					},
+					// 截取日期時間
+					getDateTime: function(strDatetime) {
+						var index = strDatetime.indexOf(".");
+						if (index > 0)
+							return strDatetime.substr(0, index);
+						return strDatetime;
+					},
+					getSex: function(nSex) {
+						if (this.isEngLang()) {
+							return nSex == 0 ? 'Female' : 'Male';
+						} else {
+							return nSex == 0 ? '女性' : '男性';
+						}
+					},
+					updateLang: function() {
+						var that = this;
+						var lang = that.getQueryString("lang");
+						if (lang != null)
+							that.lang = lang;
+						console.log("lang " + that.lang);
+					}
+
+				}
+			})
+		</script>
+	</body>
+</html>

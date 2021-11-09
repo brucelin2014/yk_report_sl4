@@ -1,0 +1,173 @@
+<!--2021-11-01, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_A2_TRAIN.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			body {
+				margin: 15px;
+				padding: 0;
+				word-break: break-all;
+			}
+
+			#tdUser {
+				font-size: 23px;
+			}
+
+			#tdData {
+				font-size: 17px;
+			}
+
+			.title {
+				background-color: lightgray;
+				padding: 17px;
+				font-size: 33px;
+				text-align: center;
+				margin: 0;
+			}
+
+			.header {
+				background-color: lightgray
+			}
+
+			[v-cloak] {
+				display: none
+			}
+
+			td {
+				height: 35px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--用户数据-->
+			<table id="tdUser" border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+				<tr>
+					<td colspan="8" class="header">
+						<!--报表标题-->
+						<div class="title">Training Information Table</div>
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Generation Time</td>
+					<td colspan="7">{{user.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">User</td>
+					<td colspan="3">{{user.USERNAME}}</td>
+					<td width="20%" class="header">User ID</td>
+					<td width="15%">{{user.NUM}}</td>
+					<td width="20%" class="header">Myodynamic Level</td>
+					<td width="5%">{{user.MGRADE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Gender</td>
+					<td>{{getSex(user.SEX)}}</td>
+					<td width="10%" class="header">Age</td>
+					<td>{{user.AGE}}</td>
+					<td width="20%" class="header">Register Date</td>
+					<td colspan="3">{{user.TIME}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Medical History</td>
+					<td colspan="7">{{user.HISTORY}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Remarks</td>
+					<td colspan="7">{{user.REMARK}}</td>
+				</tr>
+			</table>
+
+			<!--训练数据-->
+			<table id="tdData" border="1" cellspacing="0" cellpadding="5" width="100%"
+				style="text-align: center; margin-top: 0px;">
+				<tr class="header">
+					<td width="5%">No.</td>
+					<td width="20%">Game</td>
+					<td width="5%">Arm</td>
+					<td width="20%">Trating Joint</td>
+					<td width="5%">Level</td>
+					<td width="5%">Grip</td>
+					<td width="5%">Grade</td>
+					<td width="7%">Duration</td>
+					<td width="20%">Training Date</td>
+				</tr>
+				<tr v-for="(item, index) in data">
+					<td>{{index + 1}}</td>
+					<td>{{item.GAMENAME}}</td>
+					<td>{{item.TRAINARM}}</td>
+					<td>{{item.TRAINMODEL}}</td>
+					<td>{{item.TRAINDEGREE}}</td>
+					<td>{{item.GRIP}}</td>
+					<td>{{item.GRADE}}</td>
+					<td>{{item.TRAINTIME}}</td>
+					<td>{{getDateTime(item.TRAINDATE)}}</td>
+				</tr>
+			</table>
+		</div>
+
+		<script>
+			var app = new Vue({
+				el: '#app',
+				data: {
+					user: {},
+					data: {},
+					counter: 0
+				},
+				mounted: function() {
+					console.log('mounted');
+					var that = this;
+					
+					setTimeout(function() {
+						that.parseData();
+					}, 100);
+
+					that.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.user = JSON.parse(userData)[0];
+						this.data = JSON.parse(arrData);
+						//console.log(arrData);
+					},
+					// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
+					reloadAbleJSFn: function(id, newJS) {
+						try {
+							var oldjs = null;
+							var t = null;
+							var oldjs = document.getElementById(id);
+							if (oldjs)
+								oldjs.parentNode.removeChild(oldjs);
+							var scriptObj = document.createElement("script");
+							scriptObj.src = newJS;
+							scriptObj.type = "text/javascript";
+							scriptObj.id = id;
+							document.getElementsByTagName("head")[0].appendChild(scriptObj);
+						} catch (e) {
+							alert(e.message);
+						}
+					},
+					// 截取日期時間
+					getDateTime: function(strDatetime) {
+						var index = strDatetime.indexOf(".");
+						if (index > 0)
+							return strDatetime.substr(0, index);
+						return strDatetime;
+					},
+					getSex: function(nSex) {
+						return nSex == 0 ? 'Female' : 'Male';
+					}
+
+				}
+			})
+		</script>
+	</body>
+</html>

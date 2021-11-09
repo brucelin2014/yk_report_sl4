@@ -1,0 +1,190 @@
+<!--2021-11-02, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_A2_EVALUATE.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			body {
+				margin: 15px;
+				padding: 0;
+				word-break: break-all;
+			}
+
+			#tdUser {
+				font-size: 23px;
+			}
+
+			#tdData {
+				font-size: 17px;
+			}
+
+			.title {
+				background-color: lightgray;
+				padding: 17px;
+				font-size: 33px;
+				text-align: center;
+				margin: 0;
+			}
+
+			.header {
+				background-color: lightgray
+			}
+
+			[v-cloak] {
+				display: none
+			}
+
+			td {
+				height: 35px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--用户数据-->
+			<table id="tdUser" border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+				<tr>
+					<td colspan="8" class="header">
+						<!--报表标题-->
+						<div class="title">Training Information Table</div>
+					</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Generation Time</td>
+					<td colspan="7">{{user.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">User</td>
+					<td colspan="3">{{user.USERNAME}}</td>
+					<td width="20%" class="header">User ID</td>
+					<td width="15%">{{user.NUM}}</td>
+					<td width="20%" class="header">Myodynamic Level</td>
+					<td width="5%">{{user.MGRADE}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Gender</td>
+					<td>{{getSex(user.SEX)}}</td>
+					<td width="10%" class="header">Age</td>
+					<td>{{user.AGE}}</td>
+					<td width="20%" class="header">Register Date</td>
+					<td colspan="3">{{user.TIME}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Medical History</td>
+					<td colspan="7">{{user.HISTORY}}</td>
+				</tr>
+				<tr>
+					<td width="20%" class="header">Remarks</td>
+					<td colspan="7">{{user.REMARK}}</td>
+				</tr>
+			</table>
+
+			<!--评估数据-->
+			<table id="tdData" border="1" cellspacing="0" cellpadding="5" width="100%"
+				style="text-align: center; margin-top: 0px;">
+				<tr class="header">
+					<td width="5%">No.</td>
+					<td width="5%">Arm</td>
+					<td width="5%">Adduction of shoulder joints</td>
+					<td width="5%">Abduction of shoulder joints</td>
+					<td width="8%">Adduction & abduction of shoulder joints</td>
+					
+					<td width="5%">Anteflect of shoulder joints</td>
+					<td width="5%">Elbow Flexions</td>
+					<td width="8%">Pronation of radioulnar joints</td>
+					<td width="8%">Supination of radioulnar joints</td>
+					<td width="8%">Pronation & supination of radioulnar joints</td>
+					
+					<td width="5%">Palmar flexion of carpal articulations</td>
+					<td width="5%">Dorsiextension of carpal articulations</td>
+					<td width="8%">Palmar flexion & dorsiextension of carpal articulations</td>
+					<td width="5%">Grip</td>
+					<td width="10%">Evaluation Times</td>
+				</tr>
+				<tr v-for="(item, index) in data">
+					<td>{{index + 1}}</td>
+					<td>{{item.ARM}}</td>
+					<td>{{item.JIANNEI}}</td>
+					<td>{{item.JIANWAI}}</td>
+					<td>{{item.JIANNEIWAI}}</td>
+					
+					<td>{{item.JIANQIAN}}</td>
+					<td>{{item.ZHOU}}</td>
+					<td>{{item.CHIRAOQIAN}}</td>
+					<td>{{item.CHIRAOHOU}}</td>
+					<td>{{item.CHIRAOQIANHOU}}</td>
+					
+					<td>{{item.WANZHANG}}</td>
+					<td>{{item.WANBEI}}</td>
+					<td>{{item.WANZHANGBEI}}</td>
+					<td>{{item.GRIP}}</td>
+					<td>{{getDateTime(item.ETime)}}</td>
+				</tr>
+			</table>
+		</div>
+
+		<script>
+			var app = new Vue({
+				el: '#app',
+				data: {
+					lang: 0, // 0-chs, 1-eng
+					user: {},
+					data: {},
+					counter: 0
+				},
+				mounted: function() {
+					console.log('mounted');
+					var that = this;
+					
+					setTimeout(function() {
+						that.parseData();
+					}, 100);
+
+					that.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.user = JSON.parse(userData)[0];
+						this.data = JSON.parse(arrData);
+						//console.log(arrData);
+					},
+					// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
+					reloadAbleJSFn: function(id, newJS) {
+						try {
+							var oldjs = null;
+							var t = null;
+							var oldjs = document.getElementById(id);
+							if (oldjs)
+								oldjs.parentNode.removeChild(oldjs);
+							var scriptObj = document.createElement("script");
+							scriptObj.src = newJS;
+							scriptObj.type = "text/javascript";
+							scriptObj.id = id;
+							document.getElementsByTagName("head")[0].appendChild(scriptObj);
+						} catch (e) {
+							alert(e.message);
+						}
+					},
+					// 截取日期時間
+					getDateTime: function(strDatetime) {
+						var index = strDatetime.indexOf(".");
+						if (index > 0)
+							return strDatetime.substr(0, index);
+						return strDatetime;
+					},
+					getSex: function(nSex) {
+						return nSex == 0 ? 'Female' : 'Male';
+					}
+
+				}
+			})
+		</script>
+	</body>
+</html>
