@@ -126,7 +126,7 @@
 
 					setTimeout(function() {
 						that.parseData();
-					}, 100);
+					}, 500);
 
 					that.$nextTick(function() {
 						console.log('mounted all');
@@ -134,9 +134,14 @@
 				},
 				methods: {
 					parseData: function() {
-						this.user = JSON.parse(userData)[0];
-						this.data = JSON.parse(arrData);
-						//console.log(arrData);
+						try {
+							this.user = JSON.parse(userData)[0];
+							this.data = JSON.parse(arrData);
+							//console.log(arrData);
+						} catch (e) {
+							//TODO handle the exception
+							console.error(e);
+						}
 					},
 					// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
 					reloadAbleJSFn: function(id, newJS) {
@@ -163,7 +168,7 @@
 						return strDatetime;
 					},
 					getSex: function(nSex) {
-						return nSex == 0 ? 'Female' : 'Male';
+						return nSex == 0 ? 'Жiнка' : 'Чоловiк';
 					},
 					getArm: function(arm) {
 						if (arm == 'Right' || arm == '右手')
