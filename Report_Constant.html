@@ -74,7 +74,7 @@
 					<td class="header">用户：</td>
 					<td colspan="3" class="value">{{user.USERNAME}}</td>
 					<td class="header1">用户编号：</td>
-					<td width="30%" class="value">{{user.NUM}}</td>
+					<td width="30%" class="value">{{encryUserID(user.NUM)}}</td>
 				</tr>
 				<tr>
 					<td class="header">性别：</td>
@@ -360,7 +360,15 @@
 						if (r != null)
 							return unescape(r[2]);
 						return null;
-					}
+					},
+					encryUserID: function(userID) {
+						var len = userID.length;
+						var newID = userID;
+						if (len > 15) {
+							newID = userID.substring(0, 6) + '********' + userID.substring(14);
+						}
+						return newID;
+					},
 
 				}
 			})

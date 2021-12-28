@@ -1,0 +1,3 @@
+﻿var userData = '[{"AGE":73,"HISTORY":"左侧肩关节，腕关节，拇指功能障碍。","MGRADE":4,"NUM":"310112194904021026","REMARK":"","REPORTDATE":"2021-12-24 09:32:44","SEX":"女性","TIME":"2021-12-13 15:46:36","USERNAME":"叶文琪"}]';
+var arrData = '[{"ARM":"左手","CHIRAOHOU":"-73.00°","CHIRAOQIAN":"90.00°","CHIRAOQIANHOU":"163.00°","ETime":"2021-12-13 15:51:09","GRIP":"10.00°","JIANNEI":"39.70°","JIANNEIWAI":"129.10°","JIANQIAN":"69.80°","JIANWAI":"-89.40°","WANBEI":"0.00°","WANZHANG":"0.00°","WANZHANGBEI":"0.00°","ZHOU":"87.20°"}]';
+var datas = '';

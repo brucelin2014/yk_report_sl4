@@ -62,7 +62,7 @@
 					<td width="20%" class="header">{{isEngLang() ? 'User' : '用户'}}</td>
 					<td colspan="3">{{user.USERNAME}}</td>
 					<td width="20%" class="header">{{isEngLang() ? 'User ID' : '用户编号'}}</td>
-					<td width="15%">{{user.NUM}}</td>
+					<td width="15%">{{encryUserID(user.NUM)}}</td>
 					<td width="20%" class="header">{{isEngLang() ? 'Myodynamic Level' : '肌力等级'}}</td>
 					<td width="5%">{{user.MGRADE}}</td>
 				</tr>
@@ -208,7 +208,17 @@
 						if (lang != null)
 							that.lang = lang;
 						console.log("lang " + that.lang);
-					}
+					},
+					encryUserID: function(userID) {
+						if (userID == undefined)
+							return '';
+						var len = userID.length;
+						var newID = userID;
+						if (len > 15) {
+							newID = userID.substring(0, 6) + '********' + userID.substring(14);
+						}
+						return newID;
+					},
 
 				}
 			})

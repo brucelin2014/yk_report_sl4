@@ -1,4 +1,4 @@
-<!--2021-10-29, Bruce-->
+<!--2021-12-22, Bruce-->
 
 <!DOCTYPE html>
 <html>
@@ -6,7 +6,7 @@
 		<meta charset="utf-8" />
 		<title></title>
 		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
-		<script src="data/REPORT_A2_TRAIN.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_A2_EVALUATE.js" type="text/javascript" charset="utf-8"></script>
 
 		<style>
 			body {
@@ -49,65 +49,69 @@
 			<!--用户数据-->
 			<table id="tdUser" border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
 				<tr>
-					<td colspan="8" class="header">
+					<td colspan="4" class="header">
 						<!--报表标题-->
-						<div class="title">{{isEngLang() ? 'Training Information Table' : '训练信息表'}}</div>
+						<div class="title">{{isEngLang() ? 'Training Information Table' : '上肢关节活动范围表'}}</div>
 					</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">{{isEngLang() ? 'Generation Time' : '生成时间'}}</td>
-					<td colspan="7">{{user.REPORTDATE}}</td>
+					<td width="20%" class="header">{{isEngLang() ? 'User ID' : '用户编号'}}</td>
+					<td colspan="3">{{encryUserID(user.NUM)}}</td>
 				</tr>
 				<tr>
 					<td width="20%" class="header">{{isEngLang() ? 'User' : '用户'}}</td>
-					<td colspan="3">{{user.USERNAME}}</td>
-					<td width="20%" class="header">{{isEngLang() ? 'User ID' : '用户编号'}}</td>
-					<td width="15%">{{encryUserID(user.NUM)}}</td>
+					<td>{{user.USERNAME}}</td>
 					<td width="20%" class="header">{{isEngLang() ? 'Myodynamic Level' : '肌力等级'}}</td>
-					<td width="5%">{{user.MGRADE}}</td>
+					<td>{{user.MGRADE}}</td>
 				</tr>
 				<tr>
 					<td width="20%" class="header">{{isEngLang() ? 'Gender' : '性别'}}</td>
 					<td>{{getSex(user.SEX)}}</td>
 					<td width="10%" class="header">{{isEngLang() ? 'Age' : '年龄'}}</td>
 					<td>{{user.AGE}}</td>
-					<td width="20%" class="header">{{isEngLang() ? 'Register Date' : '注册日期'}}</td>
-					<td colspan="3">{{user.TIME}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">{{isEngLang() ? 'Medical History' : '病史'}}</td>
-					<td colspan="7">{{user.HISTORY}}</td>
+					<td width="20%" class="header">{{isEngLang() ? 'Medical History' : '诊断'}}</td>
+					<td colspan="3">{{user.HISTORY}}</td>
 				</tr>
 				<tr>
 					<td width="20%" class="header">{{isEngLang() ? 'Remarks' : '备注'}}</td>
-					<td colspan="7">{{user.REMARK}}</td>
+					<td colspan="3">{{user.REMARK}}</td>
 				</tr>
 			</table>
 
-			<!--训练数据-->
+			<!--评估数据-->
 			<table id="tdData" border="1" cellspacing="0" cellpadding="5" width="100%"
 				style="text-align: center; margin-top: 0px;">
 				<tr class="header">
-					<td width="5%">{{isEngLang() ? 'No.' : '序号'}}</td>
-					<td width="20%">{{isEngLang() ? 'Game' : '游戏名称'}}</td>
+					<td width="5%">{{isEngLang() ? 'No.' : '次数'}}</td>
 					<td width="5%">{{isEngLang() ? 'Arm' : '手臂'}}</td>
-					<td width="20%">{{isEngLang() ? 'Trating Joint' : '训练模式'}}</td>
-					<td width="5%">{{isEngLang() ? 'Level' : '难度'}}</td>
+					<td width="5%">{{isEngLang() ? 'Adduction of shoulder joints' : '肩内收'}}</td>
+					<td width="5%">{{isEngLang() ? 'Abduction of shoulder joints' : '肩外展'}}</td>
+					<td width="8%">{{isEngLang() ? 'Adduction & abduction of shoulder joints' : '肩内收外展'}}</td>
+					
+					<td width="5%">{{isEngLang() ? 'Anteflect of shoulder joints' : '肩前屈'}}</td>
+					<td width="5%">{{isEngLang() ? 'Elbow Flexions' : '肘屈曲'}}</td>
+					<td width="8%">{{isEngLang() ? 'Pronation of radioulnar joints' : '尺桡旋前'}}</td>
+					<td width="8%">{{isEngLang() ? 'Supination of radioulnar joints' : '尺桡旋后'}}</td>
+					<td width="8%">{{isEngLang() ? 'Pronation & supination of radioulnar joints' : '尺桡旋前旋后'}}</td>
+					
 					<td width="5%">{{isEngLang() ? 'Grip' : '握力'}}</td>
-					<td width="5%">{{isEngLang() ? 'Grade' : '成绩'}}</td>
-					<td width="7%">{{isEngLang() ? 'Duration' : '时长'}}</td>
-					<td width="20%">{{isEngLang() ? 'Training Date' : '训练日期'}}</td>
 				</tr>
 				<tr v-for="(item, index) in data">
 					<td>{{index + 1}}</td>
-					<td>{{item.GAMENAME}}</td>
-					<td>{{item.TRAINARM}}</td>
-					<td>{{item.TRAINMODEL}}</td>
-					<td>{{item.TRAINDEGREE}}</td>
+					<td>{{item.ARM}}</td>
+					<td>{{item.JIANNEI}}</td>
+					<td>{{item.JIANWAI}}</td>
+					<td>{{item.JIANNEIWAI}}</td>
+					
+					<td>{{item.JIANQIAN}}</td>
+					<td>{{item.ZHOU}}</td>
+					<td>{{item.CHIRAOQIAN}}</td>
+					<td>{{item.CHIRAOHOU}}</td>
+					<td>{{item.CHIRAOQIANHOU}}</td>
+					
 					<td>{{item.GRIP}}</td>
-					<td>{{item.GRADE}}</td>
-					<td>{{item.TRAINTIME}}</td>
-					<td>{{getDateTime(item.TRAINDATE)}}</td>
 				</tr>
 			</table>
 		</div>

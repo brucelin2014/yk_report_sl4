@@ -62,7 +62,7 @@
 					<td width="20%" class="header">User</td>
 					<td colspan="3">{{user.USERNAME}}</td>
 					<td width="20%" class="header">User ID</td>
-					<td width="15%">{{user.NUM}}</td>
+					<td width="15%">{{encryUserID(user.NUM)}}</td>
 					<td width="20%" class="header">Myodynamic Level</td>
 					<td width="5%">{{user.MGRADE}}</td>
 				</tr>
@@ -181,7 +181,17 @@
 					},
 					getSex: function(nSex) {
 						return nSex == 0 ? 'Female' : 'Male';
-					}
+					},
+					encryUserID: function(userID) {
+						if (userID == undefined)
+							return '';
+						var len = userID.length;
+						var newID = userID;
+						if (len > 15) {
+							newID = userID.substring(0, 6) + '********' + userID.substring(14);
+						}
+						return newID;
+					},
 
 				}
 			})

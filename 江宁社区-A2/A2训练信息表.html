@@ -1,4 +1,4 @@
-<!--2021-10-29, Bruce-->
+<!--2021-12-22, Bruce-->
 
 <!DOCTYPE html>
 <html>
@@ -49,38 +49,34 @@
 			<!--用户数据-->
 			<table id="tdUser" border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
 				<tr>
-					<td colspan="8" class="header">
+					<td colspan="4" class="header">
 						<!--报表标题-->
 						<div class="title">{{isEngLang() ? 'Training Information Table' : '训练信息表'}}</div>
 					</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">{{isEngLang() ? 'Generation Time' : '生成时间'}}</td>
-					<td colspan="7">{{user.REPORTDATE}}</td>
+					<td width="20%" class="header">{{isEngLang() ? 'User ID' : '用户编号'}}</td>
+					<td colspan="3">{{encryUserID(user.NUM)}}</td>
 				</tr>
 				<tr>
 					<td width="20%" class="header">{{isEngLang() ? 'User' : '用户'}}</td>
-					<td colspan="3">{{user.USERNAME}}</td>
-					<td width="20%" class="header">{{isEngLang() ? 'User ID' : '用户编号'}}</td>
-					<td width="15%">{{encryUserID(user.NUM)}}</td>
+					<td>{{user.USERNAME}}</td>
 					<td width="20%" class="header">{{isEngLang() ? 'Myodynamic Level' : '肌力等级'}}</td>
-					<td width="5%">{{user.MGRADE}}</td>
+					<td>{{user.MGRADE}}</td>
 				</tr>
 				<tr>
 					<td width="20%" class="header">{{isEngLang() ? 'Gender' : '性别'}}</td>
 					<td>{{getSex(user.SEX)}}</td>
 					<td width="10%" class="header">{{isEngLang() ? 'Age' : '年龄'}}</td>
 					<td>{{user.AGE}}</td>
-					<td width="20%" class="header">{{isEngLang() ? 'Register Date' : '注册日期'}}</td>
-					<td colspan="3">{{user.TIME}}</td>
 				</tr>
 				<tr>
-					<td width="20%" class="header">{{isEngLang() ? 'Medical History' : '病史'}}</td>
-					<td colspan="7">{{user.HISTORY}}</td>
+					<td width="20%" class="header">{{isEngLang() ? 'Medical History' : '诊断'}}</td>
+					<td colspan="3">{{user.HISTORY}}</td>
 				</tr>
 				<tr>
 					<td width="20%" class="header">{{isEngLang() ? 'Remarks' : '备注'}}</td>
-					<td colspan="7">{{user.REMARK}}</td>
+					<td colspan="3">{{user.REMARK}}</td>
 				</tr>
 			</table>
 
@@ -96,7 +92,6 @@
 					<td width="5%">{{isEngLang() ? 'Grip' : '握力'}}</td>
 					<td width="5%">{{isEngLang() ? 'Grade' : '成绩'}}</td>
 					<td width="7%">{{isEngLang() ? 'Duration' : '时长'}}</td>
-					<td width="20%">{{isEngLang() ? 'Training Date' : '训练日期'}}</td>
 				</tr>
 				<tr v-for="(item, index) in data">
 					<td>{{index + 1}}</td>
@@ -107,7 +102,6 @@
 					<td>{{item.GRIP}}</td>
 					<td>{{item.GRADE}}</td>
 					<td>{{item.TRAINTIME}}</td>
-					<td>{{getDateTime(item.TRAINDATE)}}</td>
 				</tr>
 			</table>
 		</div>

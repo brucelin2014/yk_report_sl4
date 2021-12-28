@@ -62,7 +62,7 @@
 					<td width="20%" class="header">Час Стать</td>
 					<td colspan="3">{{user.REPORTDATE}}</td>
 					<td width="20%" class="header">ID користувача</td>
-					<td width="15%">{{user.NUM}}</td>
+					<td width="15%">{{encryUserID(user.NUM)}}</td>
 					<td width="20%" class="header">Рiвень м’язовосили</td>
 					<td width="5%">{{user.MGRADE}}</td>
 				</tr>
@@ -177,7 +177,17 @@
 							return 'Лiва рука';
 						else
 							return arm;
-					}
+					},
+					encryUserID: function(userID) {
+						if (userID == undefined)
+							return '';
+						var len = userID.length;
+						var newID = userID;
+						if (len > 15) {
+							newID = userID.substring(0, 6) + '********' + userID.substring(14);
+						}
+						return newID;
+					},
 
 				}
 			})
