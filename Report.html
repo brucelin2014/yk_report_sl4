@@ -253,6 +253,8 @@
 						return true;
 					},
 					encryUserID: function(userID) {
+						if (userID == undefined)
+							return '';
 						var len = userID.length;
 						var newID = userID;
 						if (len > 15) {

@@ -1,0 +1,218 @@
+<!--2021-12-28, Bruce-->
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<script src="js/vue.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="data/REPORT_A2_EVALUATE.js" type="text/javascript" charset="utf-8"></script>
+
+		<style>
+			body {
+				margin: 15px;
+				padding: 0;
+				word-break: break-all;
+			}
+
+			#tdUser {
+				font-size: 23px;
+			}
+
+			#tdData {
+				font-size: 17px;
+			}
+
+			.title {
+				background-color: lightgray;
+				padding: 17px;
+				font-size: 33px;
+				text-align: center;
+				margin: 0;
+			}
+
+			.header {
+				background-color: lightgray
+			}
+
+			[v-cloak] {
+				display: none
+			}
+
+			td {
+				height: 35px;
+			}
+		</style>
+	</head>
+	<body>
+		<div id="app" v-cloak>
+			<!--用户数据-->
+			<table id="tdUser" border="1" cellspacing="0" cellpadding="5" width="100%" style="text-align: center;">
+				<tr>
+					<td colspan="8" class="header">
+						<!--报表标题-->
+						<div class="title">{{isEngLang() ? 'Training Information Table' : '上肢关节活动范围表'}}</div>
+					</td>
+				</tr>
+				<tr>
+					<td width="18%" class="header">{{isEngLang() ? 'Generation Time' : '生成时间'}}</td>
+					<td colspan="7">{{user.REPORTDATE}}</td>
+				</tr>
+				<tr>
+					<td width="18%" class="header">{{isEngLang() ? 'User' : '用户'}}</td>
+					<td colspan="3">{{user.USERNAME}}</td>
+					<td width="18%" class="header">{{isEngLang() ? 'User ID' : '用户编号'}}</td>
+					<td width="15%">{{encryUserID(user.NUM)}}</td>
+					<td width="18%" class="header">{{isEngLang() ? 'Myodynamic Level' : '肌力等级'}}</td>
+					<td width="5%">{{user.MGRADE}}</td>
+				</tr>
+				<tr>
+					<td width="18%" class="header">{{isEngLang() ? 'Gender' : '性别'}}</td>
+					<td>{{getSex(user.SEX)}}</td>
+					<td width="10%" class="header">{{isEngLang() ? 'Age' : '年龄'}}</td>
+					<td>{{user.AGE}}</td>
+					<td width="18%" class="header">{{isEngLang() ? 'Register Date' : '注册日期'}}</td>
+					<td colspan="3">{{user.TIME}}</td>
+				</tr>
+				<tr>
+					<td width="18%" class="header">{{isEngLang() ? 'Medical History' : '病史'}}</td>
+					<td colspan="7">{{user.HISTORY}}</td>
+				</tr>
+				<tr>
+					<td width="18%" class="header">{{isEngLang() ? 'Remarks' : '备注'}}</td>
+					<td colspan="7">{{user.REMARK}}</td>
+				</tr>
+				<tr>
+					<td width="18%" class="header">显示</td>
+					<td colspan="3">{{getMode()}}</td>
+					<td width="18%" class="header">手臂</td>
+					<td colspan="3">{{getArm()}}</td>
+				</tr>
+			</table>
+
+			<!--评估数据-->
+			<table id="tdData" border="1" cellspacing="0" cellpadding="5" width="100%"
+				style="text-align: center; margin-top: 0px;">
+				<tr>
+					<td>
+						<img src="A2paint.png" width="100%" style="max-width: 1108px;" />
+					</td>
+				</tr>
+			</table>
+		</div>
+
+		<script>
+			var app = new Vue({
+				el: '#app',
+				data: {
+					lang: 0, // 0-chs, 1-eng
+					user: {},
+					data: {},
+					counter: 0
+				},
+				created: function() {
+					//this.updateLang();
+				},
+				mounted: function() {
+					console.log('mounted');
+					var that = this;
+					this.updateLang();
+
+					setTimeout(function() {
+						that.parseData();
+					}, 100);
+
+					that.$nextTick(function() {
+						console.log('mounted all');
+					})
+				},
+				methods: {
+					parseData: function() {
+						this.user = JSON.parse(userData)[0];
+						this.data = JSON.parse(arrData);
+						//console.log(arrData);
+					},
+					// var selLang = _self.convertLanguage(_self.getQueryString("mSelLanguage"));
+					getQueryString: function(name) {
+						var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+						var r = window.location.search.substr(1).match(reg);
+						if (r != null)
+							return unescape(r[2]);
+						return null;
+					},
+					// reloadAbleJSFn("Config", "HKWeatherConfig.js?t=" + Math.random());
+					reloadAbleJSFn: function(id, newJS) {
+						try {
+							var oldjs = null;
+							var t = null;
+							var oldjs = document.getElementById(id);
+							if (oldjs)
+								oldjs.parentNode.removeChild(oldjs);
+							var scriptObj = document.createElement("script");
+							scriptObj.src = newJS;
+							scriptObj.type = "text/javascript";
+							scriptObj.id = id;
+							document.getElementsByTagName("head")[0].appendChild(scriptObj);
+						} catch (e) {
+							alert(e.message);
+						}
+					},
+					// 英语语言
+					isEngLang: function() {
+						return this.lang == 1;
+					},
+					// 截取日期時間
+					getDateTime: function(strDatetime) {
+						var index = strDatetime.indexOf(".");
+						if (index > 0)
+							return strDatetime.substr(0, index);
+						return strDatetime;
+					},
+					getSex: function(nSex) {
+						if (this.isEngLang()) {
+							return nSex == 0 ? 'Female' : 'Male';
+						} else {
+							return nSex == 0 ? '女性' : '男性';
+						}
+					},
+					updateLang: function() {
+						var that = this;
+						var lang = that.getQueryString("lang");
+						if (lang != null)
+							that.lang = lang;
+						console.log("lang " + that.lang);
+					},
+					encryUserID: function(userID) {
+						if (userID == undefined)
+							return '';
+						var len = userID.length;
+						var newID = userID;
+						if (len > 15) {
+							newID = userID.substring(0, 6) + '********' + userID.substring(14);
+						}
+						return newID;
+					},
+					getArm: function() {
+						if (this.data != null && this.data.length > 0)
+							return this.data[0].ARM;
+						return '';
+					},
+					getMode: function() {
+						if (this.user) {
+							switch (this.user.MODE) {
+								case 1:
+									return '线形';
+								case 2:
+									return '柱形';
+								default:
+									break;
+							}
+						}
+						return '';
+					}
+
+				}
+			})
+		</script>
+	</body>
+</html>
